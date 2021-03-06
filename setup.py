@@ -7,7 +7,10 @@ setup(
     author = "Arnout Boelens",
     author_email = "ampboelens@gmail.com",
     py_modules=["stplanpy"],
-    install_requires=["geopandas"],
+    install_requires=[
+        "shapely",
+        "geopandas",
+    ],
     description = (
         "The Sustainable Transportation Planner for Python is a ibrary "
         "focused on active transportation and transit. It was inspired "
