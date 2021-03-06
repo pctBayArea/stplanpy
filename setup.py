@@ -1,14 +1,18 @@
 import os
 from setuptools import setup
 
+#    py_modules=["stplanpy"],
+
 setup(
     name = "stplanpy",
     version = "0.1.0",
     author = "Arnout Boelens",
     author_email = "ampboelens@gmail.com",
-    py_modules=["stplanpy"],
+    packages = ["stplanpy"],
     install_requires=[
+        "numpy",
         "shapely",
+        "pandas",
         "geopandas",
     ],
     description = (
