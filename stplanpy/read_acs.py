@@ -7,9 +7,9 @@ def read_acs(file_name):
 
 # Column names in output data frame
     column_names = [
-        "orig_code", "dest_code", 
+        "orig_taz", "dest_taz", 
         "all", "all_error", 
-        "car_1p", "car_1p_error", 
+        "sov", "sov_error", 
         "car_2p", "car_2p_error", 
         "car_3p", "car_3p_error", 
         "car_4p", "car_4p_error", 
@@ -20,8 +20,8 @@ def read_acs(file_name):
         "subway", "subway_error",  
         "railroad", "railroad_error",  
         "ferry", "ferry_error", 
-        "bicycle", "bicycle_error", 
-        "walked", "walked_error", 
+        "bike", "bike_error", 
+        "walk", "walk_error", 
         "taxi", "taxi_error", 
         "motorcycle", "motorcycle_error", 
         "other", "other_error", 
@@ -54,9 +54,9 @@ def read_acs(file_name):
         if row["How"] == "Total, means of transportation" \
                 and row["What"] == "Estimate":
             row_nr = row_nr + 1
-            df.loc[row_nr,"orig_code"] = row[
+            df.loc[row_nr,"orig_taz"] = row[
                 "Origin"].split(',')[0].split(' ')[1]
-            df.loc[row_nr,"dest_code"] = row[
+            df.loc[row_nr,"dest_taz"] = row[
                 "Destination"].split(',')[0].split(' ')[1]
             df.loc[row_nr,"all"] = row["Number"] 
         if row["How"] == "Total, means of transportation" \
@@ -64,10 +64,10 @@ def read_acs(file_name):
             df.loc[row_nr,"all_error"] = row["Number"] 
         if row["How"] == "Car, truck, or van -- Drove alone" \
                 and row["What"] == "Estimate":
-            df.loc[row_nr,"car_1p"] = row["Number"] 
+            df.loc[row_nr,"sov"] = row["Number"] 
         if row["How"] == "Car, truck, or van -- Drove alone" \
                 and row["What"] == "Margin of Error":
-            df.loc[row_nr,"car_1p_error"] = row["Number"] 
+            df.loc[row_nr,"sov_error"] = row["Number"] 
         if row["How"] == "Car, truck, or van -- In a 2-person carpool" \
                 and row["What"] == "Estimate":
             df.loc[row_nr,"car_2p"] = row["Number"] 
@@ -123,13 +123,13 @@ def read_acs(file_name):
         if row["How"] == "Ferryboat" and row["What"] == "Margin of Error":
             df.loc[row_nr,"ferry_error"] = row["Number"] 
         if row["How"] == "Bicycle" and row["What"] == "Estimate":
-            df.loc[row_nr,"bicycle"] = row["Number"] 
+            df.loc[row_nr,"bike"] = row["Number"] 
         if row["How"] == "Bicycle" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"bicycle_error"] = row["Number"] 
+            df.loc[row_nr,"bike_error"] = row["Number"] 
         if row["How"] == "Walked" and row["What"] == "Estimate":
-            df.loc[row_nr,"walked"] = row["Number"] 
+            df.loc[row_nr,"walk"] = row["Number"] 
         if row["How"] == "Walked" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"walked_error"] = row["Number"] 
+            df.loc[row_nr,"walk_error"] = row["Number"] 
         if row["How"] == "Taxicab" and row["What"] == "Estimate":
             df.loc[row_nr,"taxi"] = row["Number"] 
         if row["How"] == "Taxicab" and row["What"] == "Margin of Error":
