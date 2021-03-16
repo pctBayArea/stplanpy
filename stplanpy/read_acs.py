@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+#pandas-flavor 0.2.0
 
 def read_acs(file_name):
 
@@ -28,6 +29,67 @@ def read_acs(file_name):
         "home", "home_error", 
         "auto", "auto_error"]
 
+    full_data = pd.DataFrame({"How":  [
+            "Total, means of transportation", 
+            "Total, means of transportation",  
+            "Car, truck, or van -- Drove alone", 
+            "Car, truck, or van -- Drove alone",  
+            "Car, truck, or van -- In a 2-person carpool", 
+            "Car, truck, or van -- In a 2-person carpool",  
+            "Car, truck, or van -- In a 3-person carpool",  
+            "Car, truck, or van -- In a 3-person carpool",  
+            "Car, truck, or van -- In a 4-person carpool",  
+            "Car, truck, or van -- In a 4-person carpool",  
+            "Car, truck, or van -- In a 5-or-6-person carpool",  
+            "Car, truck, or van -- In a 5-or-6-person carpool",  
+            "Car, truck, or van -- In a 7-or-more-person carpool",  
+            "Car, truck, or van -- In a 7-or-more-person carpool",  
+            "Bus or trolley bus",  
+            "Bus or trolley bus",  
+            "Streetcar or trolley car",  
+            "Streetcar or trolley car",  
+            "Subway or elevated",  
+            "Subway or elevated",  
+            "Railroad",  
+            "Railroad",  
+            "Ferryboat",  
+            "Ferryboat",  
+            "Bicycle",  
+            "Bicycle",  
+            "Walked",  
+            "Walked",  
+            "Taxicab",  
+            "Taxicab",  
+            "Motorcycle",  
+            "Motorcycle",  
+            "Other method",  
+            "Other method",  
+            "Worked at home",  
+            "Worked at home",  
+            "Auto",  
+            "Auto",  
+        ], "What": [
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+            "Estimate", "Margin of Error",
+        ]})
+
 # Read American Community Survey flow data
     raw_data = pd.read_csv(
         file_name, 
@@ -37,118 +99,31 @@ def read_acs(file_name):
             "Origin", "Destination", 
             "How", "What", "Number"])
 
-# Count unique columns
-    columns = len(raw_data[raw_data["How"].str.contains(
+# indices of start of data frames     
+    indices = (raw_data.loc[raw_data["How"].str.contains(
         "Total, means of transportatio") & raw_data[
-        "What"].str.contains("Estimate")])
-
+        "What"].str.contains("Estimate")].index.values)
+    
 # Set empty array
-    np_data = np.zeros((columns, len(column_names)))
+    np_data = np.zeros((len(indices), len(column_names)))
 
-# Define dataframe
+# Add index of last row
+    indices = np.append(indices, raw_data.tail(1).index.values+1, 0)
+
+# Creat one dataframe per origin destination pair and write data to numpy array
+    for i, idx0 in np.ndenumerate(indices[:-1]):
+        idx1 = indices[i[0]+1]
+        rd = raw_data[idx0:idx1]
+        np_data[i[0],0] = rd["Origin"].head(1).values[0].split(',')[0].split(' ')[1]
+        np_data[i[0],1] = rd["Destination"].head(1).values[0].split(',')[0].split(' ')[1]
+        rd = pd.merge(full_data, rd, on=["How", "What"], how="left").fillna(value=0.0)
+        np_data[i[0],2:] = rd["Number"].values 
+
+# Convert to dataframe
     df = pd.DataFrame(data=np_data, columns=column_names)
 
-# Iterate over rows of raw dataframe and copy to df
-    row_nr = -1
-    for index, row in raw_data.iterrows():
-        if row["How"] == "Total, means of transportation" \
-                and row["What"] == "Estimate":
-            row_nr = row_nr + 1
-            df.loc[row_nr,"orig_taz"] = row[
-                "Origin"].split(',')[0].split(' ')[1]
-            df.loc[row_nr,"dest_taz"] = row[
-                "Destination"].split(',')[0].split(' ')[1]
-            df.loc[row_nr,"all"] = row["Number"] 
-        if row["How"] == "Total, means of transportation" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"all_error"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- Drove alone" \
-                and row["What"] == "Estimate":
-            df.loc[row_nr,"sov"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- Drove alone" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"sov_error"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 2-person carpool" \
-                and row["What"] == "Estimate":
-            df.loc[row_nr,"car_2p"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 2-person carpool" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"car_2p_error"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 3-person carpool" \
-                and row["What"] == "Estimate":
-            df.loc[row_nr,"car_3p"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 3-person carpool" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"car_3p_error"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 4-person carpool" \
-                and row["What"] == "Estimate":
-            df.loc[row_nr,"car_4p"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 4-person carpool" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"car_4p_error"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 5-or-6-person carpool" \
-                and row["What"] == "Estimate":
-            df.loc[row_nr,"car_5p"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 5-or-6-person carpool" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"car_5p_error"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 7-or-more-person carpool" \
-                and row["What"] == "Estimate":
-            df.loc[row_nr,"car_7p"] = row["Number"] 
-        if row["How"] == "Car, truck, or van -- In a 7-or-more-person carpool" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"car_7p_error"] = row["Number"] 
-        if row["How"] == "Bus or trolley bus" and row["What"] == "Estimate":
-            df.loc[row_nr,"bus"] = row["Number"] 
-        if row["How"] == "Bus or trolley bus" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"bus_error"] = row["Number"] 
-        if row["How"] == "Streetcar or trolley car" \
-                and row["What"] == "Estimate":
-            df.loc[row_nr,"streetcar"] = row["Number"] 
-        if row["How"] == "Streetcar or trolley car" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"streetcar_error"] = row["Number"] 
-        if row["How"] == "Subway or elevated" and row["What"] == "Estimate":
-            df.loc[row_nr,"subway"] = row["Number"] 
-        if row["How"] == "Subway or elevated" \
-                and row["What"] == "Margin of Error":
-            df.loc[row_nr,"subway_error"] = row["Number"] 
-        if row["How"] == "Railroad" and row["What"] == "Estimate":
-            df.loc[row_nr,"railroad"] = row["Number"] 
-        if row["How"] == "Railroad" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"railroad_error"] = row["Number"] 
-        if row["How"] == "Ferryboat" and row["What"] == "Estimate":
-            df.loc[row_nr,"ferry"] = row["Number"] 
-        if row["How"] == "Ferryboat" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"ferry_error"] = row["Number"] 
-        if row["How"] == "Bicycle" and row["What"] == "Estimate":
-            df.loc[row_nr,"bike"] = row["Number"] 
-        if row["How"] == "Bicycle" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"bike_error"] = row["Number"] 
-        if row["How"] == "Walked" and row["What"] == "Estimate":
-            df.loc[row_nr,"walk"] = row["Number"] 
-        if row["How"] == "Walked" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"walk_error"] = row["Number"] 
-        if row["How"] == "Taxicab" and row["What"] == "Estimate":
-            df.loc[row_nr,"taxi"] = row["Number"] 
-        if row["How"] == "Taxicab" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"taxi_error"] = row["Number"] 
-        if row["How"] == "Motorcycle" and row["What"] == "Estimate":
-            df.loc[row_nr,"motorcycle"] = row["Number"] 
-        if row["How"] == "Motorcycle" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"motorcycle_error"] = row["Number"] 
-        if row["How"] == "Other method" and row["What"] == "Estimate":
-            df.loc[row_nr,"other"] = row["Number"] 
-        if row["How"] == "Other method" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"other_error"] = row["Number"] 
-        if row["How"] == "Worked at home" and row["What"] == "Estimate":
-            df.loc[row_nr,"home"] = row["Number"] 
-        if row["How"] == "Worked at home" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"home_error"] = row["Number"] 
-        if row["How"] == "Auto" and row["What"] == "Estimate":
-            df.loc[row_nr,"auto"] = row["Number"] 
-        if row["How"] == "Auto" and row["What"] == "Margin of Error":
-            df.loc[row_nr,"auto_error"] = row["Number"]
+# Format back to string
+    df["orig_taz"] = df["orig_taz"].apply("{:0>8.0f}".format)
+    df["dest_taz"] = df["dest_taz"].apply("{:0>8.0f}".format)
 
     return df

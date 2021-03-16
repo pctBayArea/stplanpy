@@ -1,8 +1,6 @@
 import os
 from setuptools import setup
 
-#    py_modules=["stplanpy"],
-
 setup(
     name = "stplanpy",
     version = "0.1.0",
@@ -13,10 +11,11 @@ setup(
         "numpy",
         "shapely",
         "pandas",
+        "pandas-flavor",
         "geopandas",
     ],
     description = (
-        "The Sustainable Transportation Planner for Python is a ibrary "
+        "The Sustainable Transportation Planner for Python is a library "
         "focused on active transportation and transit. It was inspired "
         "by the stplanr library for R"
     ),
