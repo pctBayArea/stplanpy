@@ -2,7 +2,6 @@
 
 import numpy as np
 import pandas as pd
-#pandas-flavor 0.2.0
 
 def read_acs(file_name):
 
@@ -120,10 +119,10 @@ def read_acs(file_name):
         np_data[i[0],2:] = rd["Number"].values 
 
 # Convert to dataframe
-    df = pd.DataFrame(data=np_data, columns=column_names)
+    fd = pd.DataFrame(data=np_data, columns=column_names)
 
 # Format back to string
-    df["orig_taz"] = df["orig_taz"].apply("{:0>8.0f}".format)
-    df["dest_taz"] = df["dest_taz"].apply("{:0>8.0f}".format)
+    fd["orig_taz"] = fd["orig_taz"].apply("{:0>8.0f}".format)
+    fd["dest_taz"] = fd["dest_taz"].apply("{:0>8.0f}".format)
 
-    return df
+    return fd
