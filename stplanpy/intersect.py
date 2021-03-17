@@ -4,7 +4,6 @@ import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Polygon, MultiPolygon, GeometryCollection
 
-
 def intersect(df1, df2):
 # Workaround for geopandas < 0.9
     df = gpd.overlay(df1, df2, how="intersection", keep_geom_type=False)
