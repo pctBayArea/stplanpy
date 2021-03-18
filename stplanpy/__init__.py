@@ -5,3 +5,4 @@ from stplanpy.plot_dist import plot_dist
 from stplanpy.go_dutch import go_dutch
 from stplanpy.od_lines import od_lines
 from stplanpy.distances import distances
+from stplanpy.corr_cent import corr_cent
