@@ -12,6 +12,4 @@ def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="d
         p1 = centroids.loc[x[1]]
         return LineString([p0, p1])
     
-    df = fd[[orig, dest]].apply(lambda x: lines(*x), axis=1)
-
-    return df
+    return fd[[orig, dest]].apply(lambda x: lines(*x), axis=1)

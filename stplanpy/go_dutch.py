@@ -8,8 +8,8 @@ def go_dutch(fd):
 
     def dutch(*x):
         al = x[0]
-        distance = x[1] / 1000
-        gradient = x[2]
+        distance = x[1] / 1000 # to km
+        gradient = x[2] * 100 # to %
 
         if (distance > 30):
 # Negligeble cycling past 30km            
