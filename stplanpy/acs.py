@@ -84,13 +84,16 @@ def read_acs(file_name):
     
     Examples
     --------
-    The example data file, "od_data.csv", can he found on github in the examples folder.
+    The example data file, "`od_data.csv`_", can be downloaded from github.
 
     .. code-block:: python
 
         from stplanpy import acs
 
         flow_data = acs.read_acs("od_data.csv")
+
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
 
     """
 
