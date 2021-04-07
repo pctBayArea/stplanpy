@@ -1,0 +1,7 @@
+stplanpy.distances module
+=========================
+
+.. automodule:: stplanpy.distances
+   :members:
+   :undoc-members:
+   :show-inheritance:

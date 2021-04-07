@@ -1,0 +1,7 @@
+stplanpy.read\_acs module
+=========================
+
+.. automodule:: stplanpy.read_acs
+   :members:
+   :undoc-members:
+   :show-inheritance:

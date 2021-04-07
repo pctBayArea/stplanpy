@@ -1,0 +1,7 @@
+stplanpy.go\_dutch module
+=========================
+
+.. automodule:: stplanpy.go_dutch
+   :members:
+   :undoc-members:
+   :show-inheritance:

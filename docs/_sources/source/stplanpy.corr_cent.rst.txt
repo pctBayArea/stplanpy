@@ -1,0 +1,7 @@
+stplanpy.corr\_cent module
+==========================
+
+.. automodule:: stplanpy.corr_cent
+   :members:
+   :undoc-members:
+   :show-inheritance:

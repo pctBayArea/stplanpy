@@ -1,0 +1,7 @@
+stplanpy.intersect module
+=========================
+
+.. automodule:: stplanpy.intersect
+   :members:
+   :undoc-members:
+   :show-inheritance:

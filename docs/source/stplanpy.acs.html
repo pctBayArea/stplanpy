@@ -1,0 +1,236 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>stplanpy.acs module &#8212; stplanpy 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="stplanpy.distributions module" href="stplanpy.distributions.html" />
+    <link rel="prev" title="stplanpy package" href="stplanpy.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.distributions.html" title="stplanpy.distributions module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.html" title="stplanpy package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">stplanpy 0.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="stplanpy.html" accesskey="U">stplanpy package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stplanpy.acs module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-stplanpy.acs">
+<span id="stplanpy-acs-module"></span><h1>stplanpy.acs module<a class="headerlink" href="#module-stplanpy.acs" title="Permalink to this headline">¶</a></h1>
+<p>The functions in this module can be used to import American community survey
+(ACS) 2011-2015 origin destination data into Pandas.</p>
+<dl class="py function">
+<dt id="stplanpy.acs.clean_acs">
+<code class="sig-prename descclassname">stplanpy.acs.</code><code class="sig-name descname">clean_acs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fd</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">returns</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">groups</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">home</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">reduced</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#stplanpy.acs.clean_acs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="stplanpy.acs.read_acs">
+<code class="sig-prename descclassname">stplanpy.acs.</code><code class="sig-name descname">read_acs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.acs.read_acs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import ACS origin destination data</p>
+<p>This function imports ACS 2011-2015 origin destination (OD) data into a
+Pandas dataframe. In the output dataframe there is one row per origin
+destination pair. The column names and their ACS definitions are shown in
+the table below. For each column name there is an additional column with the
+margin of error. E.g. in addition to “all” there is a column “all_error”.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column Name</p></th>
+<th class="head"><p>ACS description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>orig_taz</p></td>
+<td><p>RESIDENCE</p></td>
+</tr>
+<tr class="row-odd"><td><p>dest_taz</p></td>
+<td><p>WORKPLACE</p></td>
+</tr>
+<tr class="row-even"><td><p>all</p></td>
+<td><p>Total, means of transportation</p></td>
+</tr>
+<tr class="row-odd"><td><p>sov</p></td>
+<td><p>Car, truck, or van – Drove alone</p></td>
+</tr>
+<tr class="row-even"><td><p>car_2p</p></td>
+<td><p>Car, truck, or van – In a 2-person carpool</p></td>
+</tr>
+<tr class="row-odd"><td><p>car_3p</p></td>
+<td><p>Car, truck, or van – In a 3-person carpool</p></td>
+</tr>
+<tr class="row-even"><td><p>car_4p</p></td>
+<td><p>Car, truck, or van – In a 4-person carpool</p></td>
+</tr>
+<tr class="row-odd"><td><p>car_5p</p></td>
+<td><p>Car, truck, or van – In a 5-or-6-person carpool</p></td>
+</tr>
+<tr class="row-even"><td><p>car_7p</p></td>
+<td><p>Car, truck, or van – In a 7-or-more-person carpool</p></td>
+</tr>
+<tr class="row-odd"><td><p>bus</p></td>
+<td><p>Bus or trolley bus</p></td>
+</tr>
+<tr class="row-even"><td><p>streetcar</p></td>
+<td><p>Streetcar or trolley car</p></td>
+</tr>
+<tr class="row-odd"><td><p>subway</p></td>
+<td><p>Subway or elevated</p></td>
+</tr>
+<tr class="row-even"><td><p>railroad</p></td>
+<td><p>Railroad</p></td>
+</tr>
+<tr class="row-odd"><td><p>ferry</p></td>
+<td><p>Ferryboat</p></td>
+</tr>
+<tr class="row-even"><td><p>bike</p></td>
+<td><p>Bicycle</p></td>
+</tr>
+<tr class="row-odd"><td><p>walk</p></td>
+<td><p>Walked</p></td>
+</tr>
+<tr class="row-even"><td><p>taxi</p></td>
+<td><p>Taxicab</p></td>
+</tr>
+<tr class="row-odd"><td><p>motorcycle</p></td>
+<td><p>Motorcycle</p></td>
+</tr>
+<tr class="row-even"><td><p>other</p></td>
+<td><p>Other method</p></td>
+</tr>
+<tr class="row-odd"><td><p>home</p></td>
+<td><p>Worked at home</p></td>
+</tr>
+<tr class="row-even"><td><p>auto</p></td>
+<td><p>Auto</p></td>
+</tr>
+</tbody>
+</table>
+<p>The origin destination flow data can be found on the <a class="reference external" href="https://ctpp.transportation.org/2012-2016-5-year-ctpp/">website</a> of the
+American Association of State Highway and Transportation Officials (AASHTO)
+through their Census Transportation Planning Products Program (CTPP).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – File_name is the name and path of an ACS csv file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataframe with origin destination data broken down by mode</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.acs.clean_acs" title="stplanpy.acs.clean_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_acs</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data file, “od_data.csv”, can he found on github in the examples folder.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="stplanpy.html"
+                        title="previous chapter">stplanpy package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="stplanpy.distributions.html"
+                        title="next chapter">stplanpy.distributions module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/stplanpy.acs.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.distributions.html" title="stplanpy.distributions module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.html" title="stplanpy package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">stplanpy 0.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="stplanpy.html" >stplanpy package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stplanpy.acs module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Arnout Boelens.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>

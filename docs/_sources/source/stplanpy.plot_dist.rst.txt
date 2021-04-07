@@ -1,0 +1,7 @@
+stplanpy.plot\_dist module
+==========================
+
+.. automodule:: stplanpy.plot_dist
+   :members:
+   :undoc-members:
+   :show-inheritance:

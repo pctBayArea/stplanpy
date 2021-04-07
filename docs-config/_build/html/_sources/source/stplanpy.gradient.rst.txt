@@ -1,0 +1,7 @@
+stplanpy.gradient module
+========================
+
+.. automodule:: stplanpy.gradient
+   :members:
+   :undoc-members:
+   :show-inheritance:
