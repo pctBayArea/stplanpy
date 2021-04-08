@@ -1,6 +1,6 @@
 r"""
 The functions in this module can be used to import American community survey
-(ACS) 2011-2015 origin destination data into Pandas.
+(ACS) 2011-2015 origin destination (OD) data into Pandas.
 """
 
 import numpy as np
@@ -8,7 +8,7 @@ import pandas as pd
 
 def read_acs(file_name):
     r"""
-    Import ACS origin destination data
+    Import ACS origin destination data.
 
     This function imports ACS 2011-2015 origin destination (OD) data into a
     Pandas dataframe. In the output dataframe there is one row per origin
@@ -71,7 +71,7 @@ def read_acs(file_name):
     Parameters
     ----------
     file_name : str
-        File_name is the name and path of an ACS csv file
+        Name and path of an ACS csv file
 
     Returns
     -------
@@ -230,8 +230,42 @@ def clean_acs(fd: pd.DataFrame,
         reduced=True, 
         error=False) -> pd.DataFrame:
     r"""
+    Clean up and organize ACS data.
+
+    Parameters
+    ----------
+    returns : bool, defaults to False
+        Add duplicate data with switched origin and destination codes
+    groups : bool, defaults to True
+        Create an active transportation group (`walk` and `bike`), transit group
+        (`bus`, `streetcar`, `subway`, `railroad`, and `ferry`), and a carpool group
+        (`car_2p`, `car_3p`, `car_4p`, `car_5p`, and `car_7p`).
+    home : bool, defaults to True
+        People working from home do not travel. Subtract `home` from `all`
+    reduced : bool, defaults to True
+        Only keep `all`, `home`, `walk`, `bike`, `sov`, and groups (if True).
+    error : bool, defaults to False
+        Keep the error data.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Cleaned up dataframe with origin destination data broken down by mode
     
-    Test
+    See Also
+    --------
+    ~stplanpy.acs.read_acs
+    
+    Examples
+    --------
+    The example data file, "`od_data.csv`_", can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
     """        
 
 #    if "latitude" not in obj.columns or "longitude" not in obj.columns:
