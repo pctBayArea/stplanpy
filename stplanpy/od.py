@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pandas_flavor as pf
 from shapely.geometry import LineString
@@ -6,8 +7,8 @@ from shapely.geometry import LineString
 def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="dest_taz") -> pd.DataFrame:
     
     def lines(*x):
-        p0 = centroids.loc[x[0]]
-        p1 = centroids.loc[x[1]]
+        p0 = centroids.loc[x[0], "geometry"]
+        p1 = centroids.loc[x[1], "geometry"]
         return LineString([p0, p1])
     
     return fd[[orig, dest]].apply(lambda x: lines(*x), axis=1)

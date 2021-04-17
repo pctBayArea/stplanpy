@@ -14,6 +14,6 @@ Submodules
 
    stplanpy.acs
    stplanpy.distributions
-   stplanpy.geometry
+   stplanpy.geo
    stplanpy.od
    stplanpy.plots

@@ -12,7 +12,7 @@ setup(
         "shapely",
         "pandas",
         "pandas-flavor",
-        "geopandas",
+        "geopandas>=0.9",
     ],
     description = (
         "The Sustainable Transportation Planner for Python is a library "

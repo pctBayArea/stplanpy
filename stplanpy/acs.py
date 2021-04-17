@@ -5,6 +5,7 @@ The functions in this module can be used to import American community survey
 
 import numpy as np
 import pandas as pd
+import pandas_flavor as pf
 
 def read_acs(file_name):
     r"""
@@ -218,9 +219,6 @@ def read_acs(file_name):
     fd["dest_taz"] = fd["dest_taz"].apply("{:0>8.0f}".format)
 
     return fd
-
-import pandas as pd
-import pandas_flavor as pf
 
 @pf.register_dataframe_method
 def clean_acs(fd: pd.DataFrame, 
