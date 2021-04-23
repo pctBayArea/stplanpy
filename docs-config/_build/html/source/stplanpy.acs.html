@@ -53,11 +53,18 @@
   <div class="section" id="module-stplanpy.acs">
 <span id="stplanpy-acs-module"></span><h1>stplanpy.acs module<a class="headerlink" href="#module-stplanpy.acs" title="Permalink to this headline">¶</a></h1>
 <p>The functions in this module can be used to import American community survey
-(ACS) 2011-2015 origin destination (OD) data into Pandas.</p>
+(ACS) 2011-2015 origin destination (OD) data into Pandas. The origin destination
+flow data can be found on the <a class="reference external" href="https://ctpp.transportation.org/2012-2016-5-year-ctpp/">website</a> of the American Association of State
+Highway and Transportation Officials (AASHTO) through their Census
+Transportation Planning Products Program (CTPP).</p>
 <dl class="py function">
 <dt id="stplanpy.acs.clean_acs">
-<code class="sig-prename descclassname">stplanpy.acs.</code><code class="sig-name descname">clean_acs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fd</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">returns</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">groups</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">home</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">reduced</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#stplanpy.acs.clean_acs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clean up and organize ACS data.</p>
+<code class="sig-prename descclassname">stplanpy.acs.</code><code class="sig-name descname">clean_acs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fd</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">returns</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">groups</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">home</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">reduced</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">error</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#stplanpy.acs.clean_acs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean up and organize ACS flow data.</p>
+<p>American Community Survey (ACS) data has information on many modes of
+transportation and their error margins. This function provides various
+options to simplify this data and reduce and combine various modes of
+transportation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -67,7 +74,7 @@
 (<cite>car_2p</cite>, <cite>car_3p</cite>, <cite>car_4p</cite>, <cite>car_5p</cite>, and <cite>car_7p</cite>).</p></li>
 <li><p><strong>home</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – People working from home do not travel. Subtract <cite>home</cite> from <cite>all</cite></p></li>
 <li><p><strong>reduced</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – Only keep <cite>all</cite>, <cite>home</cite>, <cite>walk</cite>, <cite>bike</cite>, <cite>sov</cite>, and groups (if True).</p></li>
-<li><p><strong>error</strong> (<em>bool</em><em>, </em><em>defaults to False</em>) – Keep the error data.</p></li>
+<li><p><strong>error</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – Keep the error data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -176,9 +183,6 @@ margin of error. E.g. in addition to “all” there is a column “all_error”
 </tr>
 </tbody>
 </table>
-<p>The origin destination flow data can be found on the <a class="reference external" href="https://ctpp.transportation.org/2012-2016-5-year-ctpp/">website</a> of the
-American Association of State Highway and Transportation Officials (AASHTO)
-through their Census Transportation Planning Products Program (CTPP).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – Name and path of an ACS csv file</p>

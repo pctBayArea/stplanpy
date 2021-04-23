@@ -1,8 +1,12 @@
 r"""
 The functions in this module can be used to import American community survey
-(ACS) 2011-2015 origin destination (OD) data into Pandas.
-"""
+(ACS) 2011-2015 origin destination (OD) data into Pandas. The origin destination
+flow data can be found on the `website`_ of the American Association of State
+Highway and Transportation Officials (AASHTO) through their Census
+Transportation Planning Products Program (CTPP).
 
+.. _website: https://ctpp.transportation.org/2012-2016-5-year-ctpp/
+"""
 import numpy as np
 import pandas as pd
 import pandas_flavor as pf
@@ -63,12 +67,6 @@ def read_acs(file_name):
     | auto         | Auto                                                |
     +--------------+-----------------------------------------------------+
     
-    The origin destination flow data can be found on the `website`_ of the
-    American Association of State Highway and Transportation Officials (AASHTO)
-    through their Census Transportation Planning Products Program (CTPP).
-
-    .. _website: https://ctpp.transportation.org/2012-2016-5-year-ctpp/
-
     Parameters
     ----------
     file_name : str
@@ -226,9 +224,14 @@ def clean_acs(fd: pd.DataFrame,
         groups=True, 
         home=True,
         reduced=True, 
-        error=False) -> pd.DataFrame:
+        error=True) -> pd.DataFrame:
     r"""
-    Clean up and organize ACS data.
+    Clean up and organize ACS flow data.
+
+    American Community Survey (ACS) data has information on many modes of
+    transportation and their error margins. This function provides various
+    options to simplify this data and reduce and combine various modes of
+    transportation.
 
     Parameters
     ----------
@@ -242,7 +245,7 @@ def clean_acs(fd: pd.DataFrame,
         People working from home do not travel. Subtract `home` from `all`
     reduced : bool, defaults to True
         Only keep `all`, `home`, `walk`, `bike`, `sov`, and groups (if True).
-    error : bool, defaults to False
+    error : bool, defaults to True
         Keep the error data.
 
     Returns

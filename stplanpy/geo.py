@@ -1,3 +1,11 @@
+r"""
+This module performs various operations on geospatial vector data. Shapefiles of
+traffic analysis zones (`TAZ`_), places, and counties can be found `online`_.
+
+.. _TAZ: https://catalog.data.gov/dataset/tiger-line-shapefile-2011-series-information-file-for-the-2010-census-traffic-analysis-zone-taz
+
+.. _online: https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html
+"""
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -73,11 +81,68 @@ def in_place(taz: gpd.GeoDataFrame, plc: gpd.GeoDataFrame, area_min=0.001, area_
     return taz_plc
 
 @pf.register_dataframe_method
-def cent(gdf: gpd.GeoDataFrame, index_name="tazce") -> gpd.GeoDataFrame:
+def cent(gdf: gpd.GeoDataFrame, column_name="tazce") -> gpd.GeoDataFrame:
     r"""
-    Compute centroids
+    Compute centroids from a GeoDataFrame.
+
+    This function computes the centroids of the geometries in a GeoDataFrame and
+    returns them as a GeoDataFrame. By default the column name "tazce" is
+    included in the new GeoDataFrame.
+
+    Parameters
+    ----------
+    column_name : str
+        Name of an input column to be included in the output GeoDataFrame. This
+        value can also be a list of column names. The default column name is
+        "tazce".
+ 
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataframe with centroids of the geometries in the input GeoDataFrame.
+        The coordinate reference system (crs) of the output GeoDataFrame is the
+        same as the input GeoDataframe.
+    
+    See Also
+    --------
+    ~stplanpy.geo.corr_cent
+    
+    Examples
+    --------
+    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from github.
+ 
+    .. code-block:: python
+ 
+        import os
+        import shutil
+        import zipfile
+        from stplanpy import geo
+        
+        # Limit calculation to these counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Read taz
+        # Extract to temporal location
+        os.makedirs("tmp", exist_ok=True)
+        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read shape file
+        taz = geo.read_shp("tmp/tl_2011_06_taz10.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Clean up taz GeoDataFrame
+        # Rename columns
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+        # filter by county   
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Compute centroids
+        taz_cent = taz.cent()
+    
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
-    return gpd.GeoDataFrame(gdf[index_name], geometry=gdf.centroid, crs="EPSG:6933")
+    return gpd.GeoDataFrame(gdf[column_name], geometry=gdf.centroid, crs=gdf.crs)
 
 @pf.register_dataframe_method
 def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="EPSG:4326", to_crs="EPSG:6933") -> gpd.GeoDataFrame:
