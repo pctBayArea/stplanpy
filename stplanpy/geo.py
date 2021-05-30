@@ -145,13 +145,84 @@ def cent(gdf: gpd.GeoDataFrame, column_name="tazce") -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(gdf[column_name], geometry=gdf.centroid, crs=gdf.crs)
 
 @pf.register_dataframe_method
-def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="EPSG:4326", to_crs="EPSG:6933") -> gpd.GeoDataFrame:
+def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="EPSG:4326") -> gpd.GeoDataFrame:
     r"""
-    Correct a centroids
+    Correct centroid coordinates
+
+    This function can be used to manually correct centroid positions computed
+    using the :func:`~stplanpy.geo.cent` function. The required input parameters
+    are the `index` of the centroid that is corrected, and the new longitude, `lon`, and
+    latitude, `lat`.
+
+    Parameters
+    ----------
+    index : str
+        Index of the centroid that is modified
+    lon : float
+        New longitude of the corrected centroid. The default coordinate
+        reference system (crs) is "EPSG:4326".
+    lat : float
+        New latitude of the corrected centroid. The default coordinate
+        reference system (crs) is "EPSG:4326".
+    index_name : str
+        Name of the column that the `index` variable refers to. The default name
+        is "tazce".
+    crs : str
+        Coordinate reference system (crs) of the `lon` and `lat` varibles. The
+        default value is "EPSG:4326".
+ 
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataframe with corrected centroid. The coordinate reference system
+        (crs) of the output GeoDataFrame is the same as the input GeoDataframe.
+    
+    See Also
+    --------
+    ~stplanpy.geo.cent
+    
+    Examples
+    --------
+    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from github.
+ 
+    .. code-block:: python
+ 
+        import os
+        import shutil
+        import zipfile
+        from stplanpy import geo
+        
+        # Limit calculation to these counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Read taz
+        # Extract to temporal location
+        os.makedirs("tmp", exist_ok=True)
+        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read shape file
+        taz = geo.read_shp("tmp/tl_2011_06_taz10.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Clean up taz GeoDataFrame
+        # Rename columns
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+        # filter by county   
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Compute centroids
+        taz_cent = taz.cent()
+
+        # Correct centroid locations
+        # Google plex
+        taz_cent.corr_cent("00101155", -122.07805259936053, 37.42332894065777)
+    
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
     corr = Point(lon, lat)
     corr = gpd.GeoSeries([corr], crs=crs)
-    corr = corr.to_crs(to_crs)
+    corr = corr.to_crs(gdf.crs)
 
     gdf.loc[gdf[index_name] == index, "geometry"] = corr.loc[0]
       
