@@ -63,7 +63,7 @@ returns them as a GeoDataFrame. By default the column name “tazce” is
 included in the new GeoDataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>column_name</strong> (<em>str</em>) – Name of an input column to be included in the output GeoDataFrame. This
+<dd class="field-odd"><p><strong>column_name</strong> (<em>str</em><em>, </em><em>defaults to &quot;tazce&quot;</em>) – Name of an input column to be included in the output GeoDataFrame. This
 value can also be a list of column names. The default column name is
 “tazce”.</p>
 </dd>
@@ -128,9 +128,9 @@ latitude, <cite>lat</cite>.</p>
 reference system (crs) is “EPSG:4326”.</p></li>
 <li><p><strong>lat</strong> (<em>float</em>) – New latitude of the corrected centroid. The default coordinate
 reference system (crs) is “EPSG:4326”.</p></li>
-<li><p><strong>index_name</strong> (<em>str</em>) – Name of the column that the <cite>index</cite> variable refers to. The default name
+<li><p><strong>index_name</strong> (<em>str</em><em>, </em><em>defaults to &quot;tazce&quot;</em>) – Name of the column that the <cite>index</cite> variable refers to. The default name
 is “tazce”.</p></li>
-<li><p><strong>crs</strong> (<em>str</em>) – Coordinate reference system (crs) of the <cite>lon</cite> and <cite>lat</cite> varibles. The
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>defaults to &quot;EPSG:4326&quot;</em>) – Coordinate reference system (crs) of the <cite>lon</cite> and <cite>lat</cite> varibles. The
 default value is “EPSG:4326”.</p></li>
 </ul>
 </dd>
@@ -186,6 +186,67 @@ default value is “EPSG:4326”.</p></li>
 <dt id="stplanpy.geo.in_county">
 <code class="sig-prename descclassname">stplanpy.geo.</code><code class="sig-name descname">in_county</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plc</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">cnt</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">area_min</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span> &#x2192; geopandas.geodataframe.GeoDataFrame<a class="headerlink" href="#stplanpy.geo.in_county" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check in which county a place is located</p>
+<p>From one GeoDataFrame with places and one GeoDataFrame containing counties,
+this function computes in which county a place is situated. A threshold
+value is used to handle potential misalignment of the borders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>area_min</strong> (<em>float</em><em>, </em><em>defaults to 0.1</em>) – If ratio of the surface area of a place inside a county devided by the
+full sarface area of a place is smaller than this threshold value, it is
+discarded. This is a workaround for geometries who’s borders are not
+fully aligned.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataframe with column names “placefp”, “name”, “countyfp”, and
+“geometry”. “countyfp” contains the index of the county.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.geo.in_place" title="stplanpy.geo.in_place"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_place</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data files, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/ca-county-boundaries.zip">ca-county-boundaries.zip</a>” and “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+
+<span class="c1"># Limit calculation to these counties</span>
+<span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
+
+<span class="c1"># Extract to temporal location</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;ca-county-boundaries.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read county data</span>
+<span class="n">county</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;CA_Counties/CA_Counties_TIGER2016.shp&quot;</span><span class="p">)</span>
+<span class="c1"># Clean up tmp files</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+
+<span class="c1"># Filter on county codes</span>
+<span class="n">county</span> <span class="o">=</span> <span class="n">county</span><span class="p">[</span><span class="n">county</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
+
+<span class="c1"># Select columns to keep</span>
+<span class="n">county</span> <span class="o">=</span> <span class="n">county</span><span class="p">[[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]]</span>
+
+<span class="c1"># Extract to temporal location</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read place data</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;tl_2020_06_place.shp&quot;</span><span class="p">)</span>
+<span class="c1"># Clean up tmp files</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rename to Mountain View, Martinez</span>
+<span class="n">place</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;49651&quot;</span><span class="p">),</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Mountain View, Martinez&quot;</span>
+
+<span class="c1"># Compute which places lay inside which county</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="o">.</span><span class="n">in_county</span><span class="p">(</span><span class="n">county</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">

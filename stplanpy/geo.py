@@ -33,6 +33,73 @@ def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
 def in_county(plc: gpd.GeoDataFrame, cnt: gpd.GeoDataFrame, area_min=0.1) -> gpd.GeoDataFrame:
     r"""
     Check in which county a place is located
+
+    From one GeoDataFrame with places and one GeoDataFrame containing counties,
+    this function computes in which county a place is situated. A threshold
+    value is used to handle potential misalignment of the borders.
+
+    Parameters
+    ----------
+    area_min : float, defaults to 0.1
+        If ratio of the surface area of a place inside a county devided by the
+        full sarface area of a place is smaller than this threshold value, it is
+        discarded. This is a workaround for geometries who's borders are not
+        fully aligned.
+ 
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataframe with column names "placefp", "name", "countyfp", and
+        "geometry". "countyfp" contains the index of the county.
+    
+    See Also
+    --------
+    ~stplanpy.geo.in_place
+    
+    Examples
+    --------
+    The example data files, "`ca-county-boundaries.zip`_" and "`tl_2020_06_place.zip`_", can be downloaded from github.
+ 
+    .. code-block:: python
+
+        import os
+        import shutil
+        import zipfile
+        from stplanpy import geo
+
+        # Limit calculation to these counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Extract to temporal location
+        with zipfile.ZipFile("ca-county-boundaries.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read county data
+        county = geo.read_shp("tmp/" + "CA_Counties/CA_Counties_TIGER2016.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Filter on county codes
+        county = county[county["countyfp"].isin(counties)]
+
+        # Select columns to keep
+        county = county[["name", "countyfp", "geometry"]]
+
+        # Extract to temporal location
+        with zipfile.ZipFile("tl_2020_06_place.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read place data
+        place = geo.read_shp("tmp/" + "tl_2020_06_place.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Rename to Mountain View, Martinez
+        place.loc[(place["placefp"] == "49651"), "name"] = "Mountain View, Martinez"
+
+        # Compute which places lay inside which county
+        place = place.in_county(county)
+
+    .. _ca-county-boundaries.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/ca-county-boundaries.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     """
     plc["area"] = plc["geometry"].area
     plc = gpd.overlay(plc, cnt, how="intersection")
@@ -91,7 +158,7 @@ def cent(gdf: gpd.GeoDataFrame, column_name="tazce") -> gpd.GeoDataFrame:
 
     Parameters
     ----------
-    column_name : str
+    column_name : str, defaults to "tazce"
         Name of an input column to be included in the output GeoDataFrame. This
         value can also be a list of column names. The default column name is
         "tazce".
@@ -164,10 +231,10 @@ def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="E
     lat : float
         New latitude of the corrected centroid. The default coordinate
         reference system (crs) is "EPSG:4326".
-    index_name : str
+    index_name : str, defaults to "tazce"
         Name of the column that the `index` variable refers to. The default name
         is "tazce".
-    crs : str
+    crs : str, defaults to "EPSG:4326"
         Coordinate reference system (crs) of the `lon` and `lat` varibles. The
         default value is "EPSG:4326".
  
