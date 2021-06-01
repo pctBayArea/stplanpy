@@ -6,3 +6,6 @@ The Sustainable Transportation Planner for Python is a library focused on active
 Documentation:
 
 https://pctbayarea.github.io/stplanpy/source/stplanpy.html
+
+
+git lfs

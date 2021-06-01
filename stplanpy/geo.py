@@ -15,6 +15,47 @@ from shapely.geometry import Point, Polygon, MultiPolygon, GeometryCollection
 def read_shp(file_name, crs="EPSG:6933"):
     r"""
     Read shape files
+
+    Read shape files into a GeoDataFrame with a number of default options. The
+    coordinate reference system (crs) defaults to "EPSG:6933" and all the
+    column names are made lower case.
+
+    Parameters
+    ----------
+    crs : str, defaults to "EPSG:6933"
+        The coordinate reference system (crs) of the output GeoDataFrame. The
+        default value is "EPSG:6933".
+ 
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataframe with all the column names found in the shape file in lower
+        case.
+    
+    See Also
+    --------
+    ~stplanpy.geo.to_geojson
+    
+    Examples
+    --------
+    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from github.
+ 
+    .. code-block:: python
+
+        import os
+        import shutil
+        import zipfile
+        from stplanpy import geo
+
+        # Extract to temporal location
+        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read taz data
+        taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
     gdf = gpd.read_file(file_name)
     gdf = gdf.to_crs(crs)
@@ -26,6 +67,47 @@ def read_shp(file_name, crs="EPSG:6933"):
 def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
     r"""
     Write GeoDataFrame to GeoJson file
+
+    Write GeoDataFrame to a GeoJson file with the default coordinate reference
+    system (crs) "EPSG:4326".
+
+    Parameters
+    ----------
+    crs : str, defaults to "EPSG:4326"
+        The coordinate reference system (crs) of the output GeoJson file. The
+        default value is "EPSG:4326".
+ 
+    Returns
+    -------
+    None
+    
+    See Also
+    --------
+    ~stplanpy.geo.read_shp
+    
+    Examples
+    --------
+    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from github.
+ 
+    .. code-block:: python
+
+        import os
+        import shutil
+        import zipfile
+        from stplanpy import geo
+
+        # Extract to temporal location
+        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read taz data
+        taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Write to file
+        taz.to_geojson("taz.GeoJson")
+
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
     gdf.to_crs(crs).to_file(file_name, driver="GeoJSON")
 
@@ -118,6 +200,77 @@ def in_county(plc: gpd.GeoDataFrame, cnt: gpd.GeoDataFrame, area_min=0.1) -> gpd
 def in_place(taz: gpd.GeoDataFrame, plc: gpd.GeoDataFrame, area_min=0.001, area_thr=0.9999) -> gpd.GeoDataFrame:
     r"""
     Check in which place a traffic analysis zone (TAZ) is located
+
+    From one GeoDataFrame with traffic analysis zones (TAZ) and one GeoDataFrame
+    containing places, this function computes in which place a TAZ is situated.
+    Threshold values are used to handle potential misalignment of the borders.
+    If a TAZ is situated across multiple places, additional rows are created
+    for the parts that are situated within each place.
+
+    Parameters
+    ----------
+    area_min : float, defaults to 0.001
+        If ratio of the surface area of a TAZ inside a place devided by the
+        full sarface area of a TAZ is smaller than this threshold value, it is
+        discarded. This is a workaround for geometries who's borders are not
+        fully aligned.
+    area_thr : float, defaults to 0.9999
+        If ratio of the surface area of a TAZ inside a place devided by the
+        full sarface area of a TAZ is larger than this threshold value, it is
+        considered completely located within this place. This is a workaround
+        for geometries who's borders are not fully aligned.
+ 
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataframe with column names "tazce", "countyfp", "placefp",
+        "geometry", en "area". "placefp" contains the index of the place.
+    
+    See Also
+    --------
+    ~stplanpy.geo.in_county
+    
+    Examples
+    --------
+    The example data files,"`tl_2020_06_place.zip`_" and "`tl_2011_06_taz10.zip`_", can be downloaded from github.
+ 
+    .. code-block:: python
+
+        import os
+        import shutil
+        import zipfile
+        from stplanpy import geo
+
+        # Limit calculation to these counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Extract to temporal location
+        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read taz data
+        taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Extract to temporal location
+        with zipfile.ZipFile("tl_2020_06_place.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read place data
+        place = geo.read_shp("tmp/" + "tl_2020_06_place.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     """
 # Compute surface areas and overlay    
     taz["area"] = taz["geometry"].area
