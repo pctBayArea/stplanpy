@@ -22,6 +22,8 @@ def read_shp(file_name, crs="EPSG:6933"):
 
     Parameters
     ----------
+    file_name : str
+        Name and path of the shape file.
     crs : str, defaults to "EPSG:6933"
         The coordinate reference system (crs) of the output GeoDataFrame. The
         default value is "EPSG:6933".
