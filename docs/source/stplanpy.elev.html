@@ -1,0 +1,160 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>stplanpy.elev module &#8212; stplanpy 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="stplanpy.geo module" href="stplanpy.geo.html" />
+    <link rel="prev" title="stplanpy.distributions module" href="stplanpy.distributions.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.geo.html" title="stplanpy.geo module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.distributions.html" title="stplanpy.distributions module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">stplanpy 0.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="stplanpy.html" accesskey="U">stplanpy package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stplanpy.elev module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-stplanpy.elev">
+<span id="stplanpy-elev-module"></span><h1>stplanpy.elev module<a class="headerlink" href="#module-stplanpy.elev" title="Permalink to this headline">¶</a></h1>
+<p>This module performs operations on the Digital Elevation Model (DEM) from the
+NASA Shuttle Radar Topographic Mission (<a class="reference external" href="https://srtm.csi.cgiar.org/">SRTM</a>).</p>
+<dl class="py function">
+<dt id="stplanpy.elev.reproj">
+<code class="sig-prename descclassname">stplanpy.elev.</code><code class="sig-name descname">reproj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name_in</span></em>, <em class="sig-param"><span class="n">file_name_out</span></em>, <em class="sig-param"><span class="n">crs</span><span class="o">=</span><span class="default_value">'EPSG:6933'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.elev.reproj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reproject a GeoTIFF file</p>
+<p>Read a GeoTIFF file, reproject it to another coordinate reference system
+(crs), and write it to disk. The default crs is “EPSG:6933”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name_in</strong> (<em>str</em>) – Name and path of the input GeoTIFF file.</p></li>
+<li><p><strong>file_name_out</strong> (<em>str</em>) – Name and path of the output GeoTIFF file.</p></li>
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>defaults to &quot;EPSG:6933&quot;</em>) – The coordinate reference system (crs) of the output GeoTIFF file. The
+default value is “EPSG:6933”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/srtm_12_05.zip">srtm_12_05.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">elev</span>
+
+<span class="c1"># Extract to temporal location</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;srtm_12_05.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+
+<span class="c1"># reproject GeoTIFF file and write to disk</span>
+<span class="n">elev</span><span class="o">.</span><span class="n">reproj</span><span class="p">(</span><span class="s2">&quot;tmp/srtm_12_05.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;srtm_12_05_EPSG6933.tif&quot;</span><span class="p">)</span>
+
+<span class="c1"># Clean up tmp files</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="stplanpy.distributions.html"
+                        title="previous chapter">stplanpy.distributions module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="stplanpy.geo.html"
+                        title="next chapter">stplanpy.geo module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/stplanpy.elev.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.geo.html" title="stplanpy.geo module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.distributions.html" title="stplanpy.distributions module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">stplanpy 0.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="stplanpy.html" >stplanpy package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stplanpy.elev module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Arnout Boelens.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>
