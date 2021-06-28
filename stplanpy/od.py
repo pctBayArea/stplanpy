@@ -36,3 +36,33 @@ def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz",
             return np.absolute((p1 - p0) / x[2])
     
     return fd[[orig, dest, dist]].apply(lambda x: grad(*x), axis=1)
+
+@pf.register_dataframe_method
+def orig_dest(fd: pd.DataFrame, taz: pd.DataFrame) -> pd.DataFrame:
+
+# Drop lines that have no valid countyfp or placefp. i.e. are not within a
+# county or place
+    cnt = taz.dropna(subset=["countyfp"])
+    plc = taz.dropna(subset=["placefp"])
+# We do not know the distribution of origins or destinations within a TAZ.
+# Therefore, add TAZ to place if more than 0.5 of its surface area is within
+# this place.
+    plc = plc.loc[plc["area"] > 0.5]
+
+# Merge on countyfp codes
+    fd = fd.merge(cnt, how="left", left_on="orig_taz",right_index=True)
+    fd.rename(columns = {"countyfp":"orig_cnt"}, inplace = True)
+    fd = fd.merge(cnt, how="left", left_on="dest_taz",right_index=True)
+    fd.rename(columns = {"countyfp":"dest_cnt"}, inplace = True)
+
+# Merge on placefp codes
+    fd = fd.merge(plc, how="left", left_on="orig_taz",right_index=True)
+    fd.rename(columns = {"placefp":"orig_plc"}, inplace = True)
+    fd = fd.merge(plc, how="left", left_on="dest_taz",right_index=True)
+    fd.rename(columns = {"placefp":"dest_plc"}, inplace = True)
+
+# Clean up data frame
+    fd.drop(columns=list(fd.filter(regex="_x|_y")), inplace=True)
+    fd.fillna(value="", inplace=True)
+
+    return fd
