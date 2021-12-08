@@ -1,3 +1,8 @@
+r"""
+The functions in this module perform various operations on origin-denstination
+or flow data.
+"""
+
 import numpy as np
 import pandas as pd
 import pandas_flavor as pf
@@ -5,6 +10,32 @@ from shapely.geometry import LineString
 
 @pf.register_dataframe_method
 def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="dest_taz") -> pd.DataFrame:
+    r"""
+    Compute origin-destination lines.
+
+    Compute origin-destination lines for all origin-destination pairs in
+    dataframe `fd`. The `centroids` dataframe contains the coordinates of all the
+    origins and destinations.
+    
+    Parameters
+    ----------
+    centroids: pd.DataFrame
+    orig="orig_taz"
+    dest="dest_taz"
+    
+    Returns
+    -------
+    pandas.DataFrame
+        Cleaned up dataframe with origin destination data broken down by mode
+    
+    See Also
+    --------
+    ~stplanpy.acs.read_acs
+    
+    Examples
+    --------
+    The example data file, , can be downloaded from github.
+    """
     
     def lines(*x):
         p0 = centroids.loc[x[0], "geometry"]

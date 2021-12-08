@@ -5,12 +5,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>stplanpy.od module &#8212; stplanpy 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -50,24 +51,56 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-stplanpy.od">
+  <section id="module-stplanpy.od">
 <span id="stplanpy-od-module"></span><h1>stplanpy.od module<a class="headerlink" href="#module-stplanpy.od" title="Permalink to this headline">¶</a></h1>
+<p>The functions in this module perform various operations on origin-denstination
+or flow data.</p>
 <dl class="py function">
-<dt id="stplanpy.od.distances">
-<code class="sig-prename descclassname">stplanpy.od.</code><code class="sig-name descname">distances</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fd</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#stplanpy.od.distances" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.od.distances">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">distances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.distances" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="stplanpy.od.gradient">
-<code class="sig-prename descclassname">stplanpy.od.</code><code class="sig-name descname">gradient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fd</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">elevation</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">orig</span><span class="o">=</span><span class="default_value">'orig_taz'</span></em>, <em class="sig-param"><span class="n">dest</span><span class="o">=</span><span class="default_value">'dest_taz'</span></em>, <em class="sig-param"><span class="n">dist</span><span class="o">=</span><span class="default_value">'distance'</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#stplanpy.od.gradient" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.od.gradient">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elevation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distance'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.gradient" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="stplanpy.od.od_lines">
-<code class="sig-prename descclassname">stplanpy.od.</code><code class="sig-name descname">od_lines</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fd</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">centroids</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">orig</span><span class="o">=</span><span class="default_value">'orig_taz'</span></em>, <em class="sig-param"><span class="n">dest</span><span class="o">=</span><span class="default_value">'dest_taz'</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#stplanpy.od.od_lines" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dt class="sig sig-object py" id="stplanpy.od.od_lines">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">od_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.od_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute origin-destination lines.</p>
+<p>Compute origin-destination lines for all origin-destination pairs in
+dataframe <cite>fd</cite>. The <cite>centroids</cite> dataframe contains the coordinates of all the
+origins and destinations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centroids</strong> (<em>pd.DataFrame</em>) – </p></li>
+<li><p><strong>orig=&quot;orig_taz&quot;</strong> – </p></li>
+<li><p><strong>dest=&quot;dest_taz&quot;</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned up dataframe with origin destination data broken down by mode</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="stplanpy.acs.html#stplanpy.acs.read_acs" title="stplanpy.acs.read_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_acs</span></code></a></p>
 </div>
+<p class="rubric">Examples</p>
+<p>The example data file, , can be downloaded from github.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.od.orig_dest">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">orig_dest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.orig_dest" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
 
 
             <div class="clearer"></div>
@@ -93,7 +126,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -125,7 +158,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Arnout Boelens.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
     </div>
   </body>
 </html>

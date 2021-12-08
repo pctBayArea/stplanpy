@@ -1,9 +1,12 @@
 r"""
 The functions in this module can be used to import American community survey
-(ACS) 2011-2015 origin destination (OD) data into Pandas. The origin destination
+(ACS) 2012-2016 origin destination (OD) data into Pandas. The origin destination
 flow data can be found on the `website`_ of the American Association of State
 Highway and Transportation Officials (AASHTO) through their Census
-Transportation Planning Products Program (CTPP).
+Transportation Planning Products Program (CTPP). Use Means of transportation
+(18) (Workers 16 years and over) data under Part3: flows. Select Download
+format: Comma-delimited ASCII format (\*.csv), Data format: List format, and
+Remove empty rows.
 
 .. _website: https://ctpp.transportation.org/2012-2016-5-year-ctpp/
 """

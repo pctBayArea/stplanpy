@@ -5,12 +5,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>stplanpy.geo module &#8212; stplanpy 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -50,13 +51,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-stplanpy.geo">
+  <section id="module-stplanpy.geo">
 <span id="stplanpy-geo-module"></span><h1>stplanpy.geo module<a class="headerlink" href="#module-stplanpy.geo" title="Permalink to this headline">¶</a></h1>
 <p>This module performs various operations on geospatial vector data. Shapefiles of
 traffic analysis zones (<a class="reference external" href="https://catalog.data.gov/dataset/tiger-line-shapefile-2011-series-information-file-for-the-2010-census-traffic-analysis-zone-taz">TAZ</a>), places, and counties can be found <a class="reference external" href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html">online</a>.</p>
 <dl class="py function">
-<dt id="stplanpy.geo.cent">
-<code class="sig-prename descclassname">stplanpy.geo.</code><code class="sig-name descname">cent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">column_name</span><span class="o">=</span><span class="default_value">'tazce'</span></em><span class="sig-paren">)</span> &#x2192; geopandas.geodataframe.GeoDataFrame<a class="headerlink" href="#stplanpy.geo.cent" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.geo.cent">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">cent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tazce'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.geo.cent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute centroids from a GeoDataFrame.</p>
 <p>This function computes the centroids of the geometries in a GeoDataFrame and
 returns them as a GeoDataFrame. By default the column name “tazce” is
@@ -113,8 +114,8 @@ same as the input GeoDataframe.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="stplanpy.geo.corr_cent">
-<code class="sig-prename descclassname">stplanpy.geo.</code><code class="sig-name descname">corr_cent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">index</span></em>, <em class="sig-param"><span class="n">lon</span></em>, <em class="sig-param"><span class="n">lat</span></em>, <em class="sig-param"><span class="n">index_name</span><span class="o">=</span><span class="default_value">'tazce'</span></em>, <em class="sig-param"><span class="n">crs</span><span class="o">=</span><span class="default_value">'EPSG:4326'</span></em><span class="sig-paren">)</span> &#x2192; geopandas.geodataframe.GeoDataFrame<a class="headerlink" href="#stplanpy.geo.corr_cent" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.geo.corr_cent">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">corr_cent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tazce'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:4326'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.geo.corr_cent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Correct centroid coordinates</p>
 <p>This function can be used to manually correct centroid positions computed
 using the <a class="reference internal" href="#stplanpy.geo.cent" title="stplanpy.geo.cent"><code class="xref py py-func docutils literal notranslate"><span class="pre">cent()</span></code></a> function. The required input parameters
@@ -183,8 +184,8 @@ default value is “EPSG:4326”.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="stplanpy.geo.in_county">
-<code class="sig-prename descclassname">stplanpy.geo.</code><code class="sig-name descname">in_county</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plc</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">cnt</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">area_min</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span> &#x2192; geopandas.geodataframe.GeoDataFrame<a class="headerlink" href="#stplanpy.geo.in_county" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.geo.in_county">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">in_county</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cnt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.geo.in_county" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check in which county a place is located</p>
 <p>From one GeoDataFrame with places and one GeoDataFrame containing counties,
 this function computes in which county a place is situated. A threshold
@@ -250,8 +251,8 @@ fully aligned.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="stplanpy.geo.in_place">
-<code class="sig-prename descclassname">stplanpy.geo.</code><code class="sig-name descname">in_place</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">taz</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">plc</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">area_min</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">area_thr</span><span class="o">=</span><span class="default_value">0.9999</span></em><span class="sig-paren">)</span> &#x2192; geopandas.geodataframe.GeoDataFrame<a class="headerlink" href="#stplanpy.geo.in_place" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.geo.in_place">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">in_place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.geo.in_place" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check in which place a traffic analysis zone (TAZ) is located</p>
 <p>From one GeoDataFrame with traffic analysis zones (TAZ) and one GeoDataFrame
 containing places, this function computes in which place a TAZ is situated.
@@ -322,8 +323,8 @@ for geometries who’s borders are not fully aligned.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="stplanpy.geo.read_shp">
-<code class="sig-prename descclassname">stplanpy.geo.</code><code class="sig-name descname">read_shp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">crs</span><span class="o">=</span><span class="default_value">'EPSG:6933'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.geo.read_shp" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.geo.read_shp">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">read_shp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:6933'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.geo.read_shp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read shape files</p>
 <p>Read shape files into a GeoDataFrame with a number of default options. The
 coordinate reference system (crs) defaults to “EPSG:6933” and all the
@@ -346,7 +347,7 @@ case.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#stplanpy.geo.to_geojson" title="stplanpy.geo.to_geojson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_geojson</span></code></a></p>
+<p><a class="reference internal" href="#stplanpy.geo.to_geojson" title="stplanpy.geo.to_geojson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_geojson</span></code></a>, <a class="reference internal" href="#stplanpy.geo.read_zip" title="stplanpy.geo.read_zip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_zip</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from github.</p>
@@ -367,8 +368,46 @@ case.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="stplanpy.geo.to_geojson">
-<code class="sig-prename descclassname">stplanpy.geo.</code><code class="sig-name descname">to_geojson</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span><span class="p">:</span> <span class="n">geopandas.geodataframe.GeoDataFrame</span></em>, <em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">crs</span><span class="o">=</span><span class="default_value">'EPSG:4326'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.geo.to_geojson" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="stplanpy.geo.read_zip">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">read_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:6933'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.geo.read_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read zipped shape files</p>
+<p>Read zipped shape files into a GeoDataFrame with a number of default
+options. The coordinate reference system (crs) defaults to “EPSG:6933” and
+all the column names are made lower case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> (<em>str</em>) – Name and path of the zip archive.</p></li>
+<li><p><strong>tmp_dir</strong> (<em>str</em><em>, </em><em>defaults to &quot;tmp&quot;</em>) – Name of temporary directory to extract the zip archive to.</p></li>
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>defaults to &quot;EPSG:6933&quot;</em>) – The coordinate reference system (crs) of the output GeoDataFrame. The
+default value is “EPSG:6933”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataframe with all the column names found in the shape file inside
+the zip achive in lower case.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.geo.to_geojson" title="stplanpy.geo.to_geojson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_geojson</span></code></a>, <a class="reference internal" href="#stplanpy.geo.read_shp" title="stplanpy.geo.read_shp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_shp</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+
+<span class="c1"># Read taz data</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_zip</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.geo.to_geojson">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">to_geojson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:4326'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.geo.to_geojson" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write GeoDataFrame to GeoJson file</p>
 <p>Write GeoDataFrame to a GeoJson file with the default coordinate reference
 system (crs) “EPSG:4326”.</p>
@@ -409,7 +448,7 @@ default value is “EPSG:4326”.</p>
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -435,7 +474,7 @@ default value is “EPSG:4326”.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -467,7 +506,7 @@ default value is “EPSG:4326”.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Arnout Boelens.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
     </div>
   </body>
 </html>

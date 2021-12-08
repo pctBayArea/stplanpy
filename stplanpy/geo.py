@@ -6,6 +6,9 @@ traffic analysis zones (`TAZ`_), places, and counties can be found `online`_.
 
 .. _online: https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html
 """
+import glob
+import shutil
+import zipfile
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -37,6 +40,7 @@ def read_shp(file_name, crs="EPSG:6933"):
     See Also
     --------
     ~stplanpy.geo.to_geojson
+    ~stplanpy.geo.read_zip
     
     Examples
     --------
@@ -64,6 +68,70 @@ def read_shp(file_name, crs="EPSG:6933"):
     gdf.columns = gdf.columns.str.lower()
 
     return gdf
+
+def read_zip(file_name, tmp_dir="tmp", crs="EPSG:6933"):
+    r"""
+    Read zipped shape files 
+
+    Read zipped shape files into a GeoDataFrame with a number of default
+    options. The coordinate reference system (crs) defaults to "EPSG:6933" and
+    all the column names are made lower case.
+
+    Parameters
+    ----------
+    file_name : str
+        Name and path of the zip archive.
+    tmp_dir : str, defaults to "tmp"
+        Name of temporary directory to extract the zip archive to.
+    crs : str, defaults to "EPSG:6933"
+        The coordinate reference system (crs) of the output GeoDataFrame. The
+        default value is "EPSG:6933".
+ 
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataframe with all the column names found in the shape file inside
+        the zip achive in lower case.
+    
+    See Also
+    --------
+    ~stplanpy.geo.to_geojson
+    ~stplanpy.geo.read_shp
+    
+    Examples
+    --------
+    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from github.
+ 
+    .. code-block:: python
+
+        from stplanpy import geo
+
+        # Read taz data
+        taz = geo.read_zip("tl_2011_06_taz10.zip")
+
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    """
+    
+    # Extract to temporal location
+    with zipfile.ZipFile(file_name, "r") as zip_ref:
+         zip_ref.extractall(tmp_dir)
+
+    # find shape file
+    shp_file = glob.glob("tmp/**/*.shp", recursive=True)
+    if (len(shp_file) == 0):
+        raise Exception("There is no shape file inside this zip archive")
+    elif (len(shp_file) > 1):
+        raise Exception("There is more than one shape file inside this zip archive")
+                  
+    gdf = gpd.read_file(shp_file[0])
+    gdf = gdf.to_crs(crs)
+    gdf.columns = gdf.columns.str.lower()
+
+    # Clean up files
+    shutil.rmtree(tmp_dir)
+
+    return gdf
+
 
 @pf.register_dataframe_method
 def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
