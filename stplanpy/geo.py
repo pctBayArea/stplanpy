@@ -6,6 +6,8 @@ traffic analysis zones (`TAZ`_), places, and counties can be found `online`_.
 
 .. _online: https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html
 """
+import os
+import warnings
 import glob
 import shutil
 import zipfile
@@ -15,65 +17,11 @@ import geopandas as gpd
 import pandas_flavor as pf
 from shapely.geometry import Point, Polygon, MultiPolygon, GeometryCollection
 
-def read_shp(file_name, crs="EPSG:6933"):
+def read_shp(file_name, tmp_dir="tmp", crs="EPSG:6933"):
     r"""
-    Read shape files
+    Read (zipped) shape files 
 
-    Read shape files into a GeoDataFrame with a number of default options. The
-    coordinate reference system (crs) defaults to "EPSG:6933" and all the
-    column names are made lower case.
-
-    Parameters
-    ----------
-    file_name : str
-        Name and path of the shape file.
-    crs : str, defaults to "EPSG:6933"
-        The coordinate reference system (crs) of the output GeoDataFrame. The
-        default value is "EPSG:6933".
- 
-    Returns
-    -------
-    geopandas.GeoDataFrame
-        GeoDataframe with all the column names found in the shape file in lower
-        case.
-    
-    See Also
-    --------
-    ~stplanpy.geo.to_geojson
-    ~stplanpy.geo.read_zip
-    
-    Examples
-    --------
-    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from github.
- 
-    .. code-block:: python
-
-        import os
-        import shutil
-        import zipfile
-        from stplanpy import geo
-
-        # Extract to temporal location
-        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read taz data
-        taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
-
-    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
-    """
-    gdf = gpd.read_file(file_name)
-    gdf = gdf.to_crs(crs)
-    gdf.columns = gdf.columns.str.lower()
-
-    return gdf
-
-def read_zip(file_name, tmp_dir="tmp", crs="EPSG:6933"):
-    r"""
-    Read zipped shape files 
-
-    Read zipped shape files into a GeoDataFrame with a number of default
+    Read (zipped) shape files into a GeoDataFrame with a number of default
     options. The coordinate reference system (crs) defaults to "EPSG:6933" and
     all the column names are made lower case.
 
@@ -96,7 +44,6 @@ def read_zip(file_name, tmp_dir="tmp", crs="EPSG:6933"):
     See Also
     --------
     ~stplanpy.geo.to_geojson
-    ~stplanpy.geo.read_shp
     
     Examples
     --------
@@ -104,31 +51,46 @@ def read_zip(file_name, tmp_dir="tmp", crs="EPSG:6933"):
  
     .. code-block:: python
 
+        import os
+        import shutil
+        import zipfile
         from stplanpy import geo
 
-        # Read taz data
+        # Extract to temporal location
+        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
+            zip_ref.extractall("tmp")
+        # Read taz data from shp file
+        taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
+        # Clean up tmp files
+        shutil.rmtree("tmp")
+
+        # Read taz data from zip file
         taz = geo.read_zip("tl_2011_06_taz10.zip")
 
     .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
-    
-    # Extract to temporal location
-    with zipfile.ZipFile(file_name, "r") as zip_ref:
-         zip_ref.extractall(tmp_dir)
 
-    # find shape file
-    shp_file = glob.glob("tmp/**/*.shp", recursive=True)
-    if (len(shp_file) == 0):
-        raise Exception("There is no shape file inside this zip archive")
-    elif (len(shp_file) > 1):
-        raise Exception("There is more than one shape file inside this zip archive")
-                  
+    if (os.path.splitext(file_name)[1] == ".zip"):
+        # Extract to temporal location
+        with zipfile.ZipFile(file_name, "r") as zip_ref:
+             zip_ref.extractall(tmp_dir)
+
+        # find shape file
+        shp_file = glob.glob("tmp/**/*.shp", recursive=True)
+        if (len(shp_file) == 0):
+            raise Exception("There is no shape file inside this zip archive")
+        elif (len(shp_file) > 1):
+            raise Exception("There is more than one shape file inside this zip archive")
+    else:
+        shp_file = [file_name]
+
     gdf = gpd.read_file(shp_file[0])
     gdf = gdf.to_crs(crs)
     gdf.columns = gdf.columns.str.lower()
 
-    # Clean up files
-    shutil.rmtree(tmp_dir)
+    if (os.path.splitext(file_name)[1] == ".zip"):
+        # Clean up files
+        shutil.rmtree(tmp_dir)
 
     return gdf
 
@@ -342,6 +304,10 @@ def in_place(taz: gpd.GeoDataFrame, plc: gpd.GeoDataFrame, area_min=0.001, area_
     .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     """
+
+# Ignore UserWarning from overlay function below
+    warnings.filterwarnings("ignore", category=UserWarning)
+
 # Compute surface areas and overlay    
     taz["area"] = taz["geometry"].area
     taz_plc = gpd.overlay(taz, plc, how="intersection")
