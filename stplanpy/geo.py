@@ -28,7 +28,7 @@ def read_shp(file_name, tmp_dir="tmp", crs="EPSG:6933"):
     Parameters
     ----------
     file_name : str
-        Name and path of the zip archive.
+        Name and path of the (zipped) shape file.
     tmp_dir : str, defaults to "tmp"
         Name of temporary directory to extract the zip archive to.
     crs : str, defaults to "EPSG:6933"
