@@ -81,19 +81,22 @@ def orig_dest(fd: pd.DataFrame, taz: pd.DataFrame) -> pd.DataFrame:
     plc = plc.loc[plc["area"] > 0.5]
 
 # Merge on countyfp codes
-    fd = fd.merge(cnt, how="left", left_on="orig_taz",right_index=True)
+    fd = fd.merge(cnt, how="left", left_on="orig_taz",right_on="tazce")
     fd.rename(columns = {"countyfp":"orig_cnt"}, inplace = True)
-    fd = fd.merge(cnt, how="left", left_on="dest_taz",right_index=True)
+    fd = fd.drop(columns=["tazce", "placefp", "geometry", "area"])
+    fd = fd.merge(cnt, how="left", left_on="dest_taz",right_on="tazce")
     fd.rename(columns = {"countyfp":"dest_cnt"}, inplace = True)
+    fd = fd.drop(columns=["tazce", "placefp", "geometry", "area"])
 
 # Merge on placefp codes
-    fd = fd.merge(plc, how="left", left_on="orig_taz",right_index=True)
+    fd = fd.merge(plc, how="left", left_on="orig_taz",right_on="tazce")
     fd.rename(columns = {"placefp":"orig_plc"}, inplace = True)
-    fd = fd.merge(plc, how="left", left_on="dest_taz",right_index=True)
+    fd = fd.drop(columns=["tazce", "countyfp", "geometry", "area"])
+    fd = fd.merge(plc, how="left", left_on="dest_taz",right_on="tazce")
     fd.rename(columns = {"placefp":"dest_plc"}, inplace = True)
+    fd = fd.drop(columns=["tazce", "countyfp", "geometry", "area"])
 
 # Clean up data frame
-    fd.drop(columns=list(fd.filter(regex="_x|_y")), inplace=True)
     fd.fillna(value="", inplace=True)
 
     return fd
