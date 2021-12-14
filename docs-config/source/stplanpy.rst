@@ -13,7 +13,7 @@ Submodules
    :maxdepth: 4
 
    stplanpy.acs
-   stplanpy.distributions
+   stplanpy.dist
    stplanpy.geo
    stplanpy.od
    stplanpy.plots

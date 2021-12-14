@@ -66,6 +66,36 @@ or flow data.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.od.mode_share">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">mode_share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike',</span> <span class="pre">'go_dutch']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.mode_share" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute mode share</p>
+<p>Compute origin-destination lines for all origin-destination pairs in
+dataframe <cite>fd</cite>. The <cite>centroids</cite> dataframe contains the coordinates of all the
+origins and destinations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centroids</strong> (<em>pd.DataFrame</em>) – </p></li>
+<li><p><strong>orig=&quot;orig_taz&quot;</strong> – </p></li>
+<li><p><strong>dest=&quot;dest_taz&quot;</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned up dataframe with origin destination data broken down by mode</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="stplanpy.acs.html#stplanpy.acs.read_acs" title="stplanpy.acs.read_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_acs</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data file, , can be downloaded from github.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.od_lines">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">od_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.od_lines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute origin-destination lines.</p>

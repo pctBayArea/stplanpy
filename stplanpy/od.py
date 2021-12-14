@@ -2,11 +2,13 @@ r"""
 The functions in this module perform various operations on origin-denstination
 or flow data.
 """
-
+import warnings
 import numpy as np
 import pandas as pd
+import geopandas as gpd
 import pandas_flavor as pf
 from shapely.geometry import LineString
+from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
 def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="dest_taz") -> pd.DataFrame:
@@ -36,10 +38,12 @@ def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="d
     --------
     The example data file, , can be downloaded from github.
     """
-    
+# Ignore ShapelyDeprecationWarning
+    warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
+
     def lines(*x):
-        p0 = centroids.loc[x[0], "geometry"]
-        p1 = centroids.loc[x[1], "geometry"]
+        p0 = centroids.loc[centroids["tazce"] == x[0], "geometry"].iloc[0]
+        p1 = centroids.loc[centroids["tazce"] == x[1], "geometry"].iloc[0]
         return LineString([p0, p1])
     
     return fd[[orig, dest]].apply(lambda x: lines(*x), axis=1)
@@ -62,8 +66,8 @@ def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz",
         if (x[2] == 0):
             return 0.0
         else:
-            p0 = elevation.loc[x[0]].values[0]
-            p1 = elevation.loc[x[1]].values[0]
+            p0 = elevation.loc[elevation["tazce"] == x[0], "elevation"].iloc[0]
+            p1 = elevation.loc[elevation["tazce"] == x[1], "elevation"].iloc[0]
             return np.absolute((p1 - p0) / x[2])
     
     return fd[[orig, dest, dist]].apply(lambda x: grad(*x), axis=1)
@@ -100,3 +104,76 @@ def orig_dest(fd: pd.DataFrame, taz: pd.DataFrame) -> pd.DataFrame:
     fd.fillna(value="", inplace=True)
 
     return fd
+
+@pf.register_dataframe_method
+def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame, modes=["bike", "go_dutch"], orig=None, dest=None, code=None) -> pd.DataFrame:
+    r"""
+    Compute mode share
+
+    Compute origin-destination lines for all origin-destination pairs in
+    dataframe `fd`. The `centroids` dataframe contains the coordinates of all the
+    origins and destinations.
+    
+    Parameters
+    ----------
+    centroids: pd.DataFrame
+    orig="orig_taz"
+    dest="dest_taz"
+    
+    Returns
+    -------
+    pandas.DataFrame
+        Cleaned up dataframe with origin destination data broken down by mode
+    
+    See Also
+    --------
+    ~stplanpy.acs.read_acs
+    
+    Examples
+    --------
+    The example data file, , can be downloaded from github.
+    """
+# Set origin, destination, and code column names    
+    if (orig is None) and (dest is None) and (code is None):
+        if ("countyfp" in gdf.columns) and  ("placefp" not in gdf.columns) and ("tazce" not in gdf.columns):
+            orig="orig_cnt"
+            dest="dest_cnt"
+            code="countyfp"
+        elif ("countyfp" in gdf.columns) and ("placefp" in gdf.columns) and ("tazce" in gdf.columns):
+            orig="orig_taz"
+            dest="dest_taz"
+            code="tazce"
+        elif ("placefp" in gdf.columns) and ("tazce" not in gdf.columns):
+            orig="orig_plc"
+            dest="dest_plc"
+            code="placefp"
+        else:
+            raise Exception("GeoDataFrame is not recognized. Please specify orig, dest, and code variables")
+    else:
+        raise Exception("Please specify orig, dest, and code variables")
+
+# Initialize
+    df = gdf.loc[:,[code]]
+    df["all"] = 0.0
+    for mode in modes:
+        df[mode] = 0.0
+    
+ # Total number of commute trips consistst of:
+ # * trips that start and end in same location
+ # * trips that start elsewhere and end at location
+ # * trips that start at location and end elsewhere
+    
+    for index, row in df.iterrows():
+#        print(row[code])
+        fd = flow_data.loc[(flow_data[orig] == row[code]) | (flow_data[dest] == row[code])]
+#        print(fd)
+        if not fd.empty:
+            df.loc[df[code] == row[code], "all"] = fd["all"].sum()
+            for mode in modes:
+                df.loc[df[code] == row[code], mode] = fd[mode].sum()
+    
+    for mode in modes:
+        df[mode] /= df["all"]
+        df[mode] = df[mode].fillna(0.0)
+   
+    return df[modes + ["all"]]

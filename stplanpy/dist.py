@@ -57,7 +57,7 @@ def go_dutch(fd: pd.DataFrame, column_names=["all", "distance", "gradient"]) -> 
 
     .. code-block:: python
 
-        from stplanpy import distributions
+        from stplanpy import dist
 
         flow_data = acs.read_acs("od_data.csv")
         flow_data = flow_data.clean_acs()
