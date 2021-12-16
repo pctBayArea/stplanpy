@@ -13,8 +13,8 @@ Submodules
    :maxdepth: 4
 
    stplanpy.acs
+   stplanpy.cycle
    stplanpy.dist
    stplanpy.geo
    stplanpy.od
-   stplanpy.plots
    stplanpy.srtm

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 import pandas_flavor as pf
+from shapely.geometry import Point
 from shapely.geometry import LineString
 from shapely.errors import ShapelyDeprecationWarning
 
@@ -38,25 +39,25 @@ def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="d
     --------
     The example data file, , can be downloaded from github.
     """
-# Ignore ShapelyDeprecationWarning
+# Ignore shapely warning while using version 1.8
     warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
     def lines(*x):
-        p0 = centroids.loc[centroids["tazce"] == x[0], "geometry"].iloc[0]
-        p1 = centroids.loc[centroids["tazce"] == x[1], "geometry"].iloc[0]
-        return LineString([p0, p1])
+        x0 = centroids.loc[centroids["tazce"] == x[0], "geometry"].iloc[0].x
+        y0 = centroids.loc[centroids["tazce"] == x[0], "geometry"].iloc[0].y
+        x1 = centroids.loc[centroids["tazce"] == x[1], "geometry"].iloc[0].x
+        y1 = centroids.loc[centroids["tazce"] == x[1], "geometry"].iloc[0].y
+        return LineString([(x0,y0), (x1,y1)])   
     
     return fd[[orig, dest]].apply(lambda x: lines(*x), axis=1)
 
 @pf.register_dataframe_method
-def distances(fd: pd.DataFrame) -> pd.DataFrame:
+def distances(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
     
     def f(x):
         return x.length
     
-    df = fd["geometry"].apply(lambda x: f(x))
-
-    return df
+    return fd[geom].apply(lambda x: f(x))  
 
 @pf.register_dataframe_method
 def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz", 
@@ -71,6 +72,31 @@ def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz",
             return np.absolute((p1 - p0) / x[2])
     
     return fd[[orig, dest, dist]].apply(lambda x: grad(*x), axis=1)
+
+@pf.register_dataframe_method
+def directness(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
+    r"""
+    Compute directness of a route
+    """    
+    def direct(x):
+# Compute distance along route
+        rt_dist = x.length
+
+# Extract begin and end longitude and latitude of each geometry
+        x0 = Point(x.coords[0]).x
+        y0 = Point(x.coords[0]).y
+        x1 = Point(x.coords[-1]).x
+        y1 = Point(x.coords[-1]).y
+
+# Compute distance along od line        
+        ln_dist = LineString([(x0,y0), (x1,y1)]).length
+
+        if (ln_dist == 0):
+            return 1.0
+        else:
+            return rt_dist/ln_dist
+    
+    return fd[geom].apply(lambda x: direct(x))
 
 @pf.register_dataframe_method
 def orig_dest(fd: pd.DataFrame, taz: pd.DataFrame) -> pd.DataFrame:

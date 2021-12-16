@@ -9,7 +9,7 @@ setup(
     packages = ["stplanpy"],
     install_requires=[
         "numpy",
-        "shapely",
+        "shapely<=2.0",
         "pandas",
         "pandas-flavor",
         "geopandas>=0.9",
