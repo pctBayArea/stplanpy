@@ -143,6 +143,8 @@ def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
     """
     gdf.to_crs(crs).to_file(file_name, driver="GeoJSON")
 
+    return None
+
 @pf.register_dataframe_method
 def in_county(plc: gpd.GeoDataFrame, cnt: gpd.GeoDataFrame, area_min=0.1) -> gpd.GeoDataFrame:
     r"""
@@ -483,3 +485,18 @@ def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="E
     gdf.loc[gdf[index_name] == index, "geometry"] = corr.loc[0]
       
     return gdf
+
+@pf.register_dataframe_method
+def find_cent(fd: gpd.GeoDataFrame, geom="geomefry", orig="orig_taz", dest="dest_taz"):
+    r"""
+    Find centroid coordinates
+
+    """
+# Find rows with Point geometry type    
+    fd = fd.loc[fd.geom_type == "Point"]
+
+# Print the origin and destination tazce values
+    if not fd.empty:
+        print(fd[[orig, dest]])
+      
+    return None

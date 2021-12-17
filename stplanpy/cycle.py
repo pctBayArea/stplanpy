@@ -62,9 +62,11 @@ def route_lines(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balan
             coordinates = [*zip(elem, elem)]
             return LineString(coordinates)
         else:
-            warnings.warn("No route found. Please relocate one of these centroids closer to a road using the corr_cent function in the geo module", Warning, stacklevel=2)
-
-            return LineString([(x0,y0), (x1,y1)])   
+            if (x0 == x1):
+                return LineString([(x0,y0), (x1,y1)])   
+            else:
+                warnings.warn("No route found. Please relocate one of the centroids closer to a road using the corr_cent function in the geo module", Warning, stacklevel=2)
+                return Point(x0,y0)
 
     return gpd.GeoSeries(fd[geom].to_crs("EPSG:4326").apply(lambda x: routes(x)), crs="EPSG:4326").to_crs(fd.crs)
 
