@@ -98,3 +98,13 @@ def go_dutch(fd: pd.DataFrame, column_names=["all", "distance", "gradient"]) -> 
             return al * np.exp(logit) / (1.0 + np.exp(logit))
 
     return fd[column_names].apply(lambda x: dutch(*x), axis=1)
+
+#@pf.register_dataframe_method
+#def mode_dist(fd: pd.DataFrame, dist="distance", mode="bike", al="all", bins=np.arange(0, 30000, 2000)) -> pd.DataFrame:
+#    hist_all = np.histogram(fd[dist], weights=fd[al], bins=bins)
+#    hist_mode = np.histogram(fd[dist], weights=fd[mode], bins=bins)
+#   
+#    prob = hist_mode[0]/hist_all[0]
+#    bar = (hist_mode[1][1:]+hist_mode[1][:-1])/2
+#
+#    return pd.DataFrame(data=np.stack((prob, bar)).T, columns=["probability","distance"], index=None) 

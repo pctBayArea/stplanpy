@@ -74,31 +74,6 @@ def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz",
     return fd[[orig, dest, dist]].apply(lambda x: grad(*x), axis=1)
 
 @pf.register_dataframe_method
-def directness(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
-    r"""
-    Compute directness of a route
-    """    
-    def direct(x):
-# Compute distance along route
-        rt_dist = x.length
-
-# Extract begin and end longitude and latitude of each geometry
-        x0 = Point(x.coords[0]).x
-        y0 = Point(x.coords[0]).y
-        x1 = Point(x.coords[-1]).x
-        y1 = Point(x.coords[-1]).y
-
-# Compute distance along od line        
-        ln_dist = LineString([(x0,y0), (x1,y1)]).length
-
-        if (ln_dist == 0):
-            return 1.0
-        else:
-            return rt_dist/ln_dist
-    
-    return fd[geom].apply(lambda x: direct(x))
-
-@pf.register_dataframe_method
 def orig_dest(fd: pd.DataFrame, taz: pd.DataFrame) -> pd.DataFrame:
 
 # Drop lines that have no valid countyfp or placefp. i.e. are not within a

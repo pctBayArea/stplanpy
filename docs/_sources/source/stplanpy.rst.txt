@@ -17,4 +17,5 @@ Submodules
    stplanpy.dist
    stplanpy.geo
    stplanpy.od
+   stplanpy.route
    stplanpy.srtm
