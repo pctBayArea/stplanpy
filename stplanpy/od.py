@@ -178,3 +178,60 @@ def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame, modes=["bike"
         df[mode] = df[mode].fillna(0.0)
    
     return df[modes + ["all"]]
+
+@pf.register_dataframe_method
+def to(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
+    r"""
+    To
+    """
+    length = len(code)
+
+    if (length == 3):
+        dest = "dest_cnt"
+    elif (length == 5):
+        dest = "dest_plc"
+    elif (length == 8):
+        dest = "dest_taz"
+    else:
+        raise Exception("code not recognized")
+
+    return fd.loc[fd[dest] == code]
+
+@pf.register_dataframe_method
+def frm(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
+    r"""
+    From
+    """
+    length = len(code)
+
+    if (length == 3):
+        orig = "orig_cnt"
+    elif (length == 5):
+        orig = "orig_plc"
+    elif (length == 8):
+        orig = "orig_taz"
+    else:
+        raise Exception("code not recognized")
+
+    return fd.loc[fd[orig] == code]
+
+@pf.register_dataframe_method
+def to_frm(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
+    r"""
+    To from
+    """
+    length = len(code)
+
+    if (length == 3):
+        orig = "orig_cnt"
+        dest = "dest_cnt"
+    elif (length == 5):
+        orig = "orig_plc"
+        dest = "dest_plc"
+    elif (length == 8):
+        orig = "orig_taz"
+        dest = "dest_taz"
+    else:
+        raise Exception("code not recognized")
+
+    return fd.loc[(fd[orig] == code) | (fd[dest] == code)]

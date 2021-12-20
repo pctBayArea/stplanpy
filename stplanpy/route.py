@@ -5,8 +5,11 @@ import warnings
 import pandas as pd
 import geopandas as gpd
 import pandas_flavor as pf
+from shapely.ops import linemerge
 from shapely.geometry import Point
 from shapely.geometry import LineString
+from shapely.geometry import MultiLineString
+from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
 def directness(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
@@ -34,52 +37,89 @@ def directness(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
     return fd[geom].apply(lambda x: direct(x))
 
 @pf.register_dataframe_method
-def reduce(fd: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def reduce(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -> gpd.GeoDataFrame:
     r"""
-    Reduce route network
+    Reduce flow_data to a network
     """
-# Ignore UserWarning from overlay function below
-    warnings.filterwarnings("ignore", category=UserWarning)
+# Ignore shapely warning while using version 1.8
+    warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
+# Drop all columns except geom and modes
+    mode = modes.copy()
+    mode.append(geom)
+    gdf = fd[mode]
 
-    gdf0 = fd
-    gdf1 = fd
-    gdf2 = fd
+# Drop all columns where all modes are zero
+    gdf = gdf[gdf[modes].values.sum(axis=1) != 0]
 
-    i = 0
-    cont = True
-    i_max = gdf0.shape[0]
-    while (cont):
-        gdf_tmp = gdf0.drop([gdf0.index[i]]).overlay(gdf0.iloc[[i]], how="intersection")
-        if not gdf_tmp.empty:
-            gdf0 = gdf_tmp
-            gdf0.rename(columns = {"all_1":"all"}, inplace = True)
-            gdf0.rename(columns = {"bike_1":"bike"}, inplace = True)
-            gdf0.loc[0, "all"]  = gdf0.loc[0, "all"]  + gdf0.loc[0, "all_2" ]
-            gdf0.loc[0, "bike"] = gdf0.loc[0, "bike"] + gdf0.loc[0, "bike_2"]
-            gdf0 = gdf0.drop(columns="all_2")
-            gdf0 = gdf0.drop(columns="bike_2")
+    def segments(curve):
+        return MultiLineString(list(map(LineString, zip(curve.coords[:-1], curve.coords[1:]))))
 
-            gdf1 = gdf1.iloc[[i]].overlay(gdf1.drop([gdf1.index[i]]), how="difference")
-          
-            gdf2 = gdf2.drop([gdf2.index[i]]).overlay(gdf2.iloc[[i]], how="difference")
+# Break up routes into line segments
+    gdf["geometry"] = fd[geom].apply(lambda x: segments(x))
+    gdf = gdf.explode(ignore_index=True)
 
-            gdf0 = gdf0.explode(ignore_index=True)
-            gdf1 = gdf1.explode(ignore_index=True)
-            gdf2 = gdf2.explode(ignore_index=True)
-
-            frames = [gdf0, gdf1, gdf2]
-            gdf0 = gpd.GeoDataFrame(pd.concat(frames, ignore_index=True), geometry='geometry')
-            gdf1 = gdf0
-            gdf2 = gdf0
-
-            i = 0
-            i_max = gdf0.shape[0]
-
-        i += 1
-        if (i < i_max):
-            cont = True
+    def reverse(line):
+        if (line.coords[0][0] > line.coords[1][0]):
+            return True 
         else:
-            cont = False
+            return False
 
-    return gdf0
+# Set reverse direction                                         
+    gdf["reverse"] = gdf["geometry"].apply(lambda x: reverse(x))
+
+    def direction(*x):
+        if ([1]):
+            return LineString([x[0].coords[1], x[0].coords[0]])
+        else:
+            return x[0]
+
+# Align all segments in the same direction
+    gdf["geometry"] = gdf[["geometry", "reverse"]].apply(lambda x: direction(*x), axis=1)
+
+    def point_x0(line):
+        return line.coords[0][0]
+
+    def point_y0(line):
+        return line.coords[0][1]
+
+    def point_x1(line):
+        return line.coords[1][0]
+
+    def point_y1(line):
+        return line.coords[1][1]
+
+# Extract the individual longitudes and lattitudes so groupby function can be
+# used
+    gdf["x0"] = gdf["geometry"].apply(lambda x: point_x0(x))
+    gdf["y0"] = gdf["geometry"].apply(lambda x: point_y0(x))
+    gdf["x1"] = gdf["geometry"].apply(lambda x: point_x1(x))
+    gdf["y1"] = gdf["geometry"].apply(lambda x: point_y1(x))
+
+# Sum duplicate entries using groupby
+    for mode in modes:
+        gdf[mode] = gdf.groupby(["x0", "y0", "x1", "y1"])[mode].transform("sum")
+
+# Realign all segments
+    gdf["geometry"] = gdf[["geometry", "reverse"]].apply(lambda x: direction(*x), axis=1)
+
+# Drop duplicates and extra columns
+    gdf = gdf.drop_duplicates(subset=["x0", "y0", "x1", "y1"])
+    gdf.drop(["x0", "y0", "x1", "y1", "reverse"], axis=1, inplace=True)
+
+# Dissolve elements
+    gdf = gdf.dissolve(by=modes, as_index=False)
+
+# Drop empty geometries
+    gdf = gdf[~gdf.is_empty] 
+
+    def merge(multi_line):
+        if (multi_line.geom_type == "MultiLineString"):
+            return linemerge(multi_line)
+        else:
+            return multi_line
+
+# Merge line segments
+    gdf["geometry"] = gdf["geometry"].apply(lambda x: merge(x))
+
+    return gdf
