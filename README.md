@@ -7,5 +7,8 @@ Documentation:
 
 https://pctbayarea.github.io/stplanpy/source/stplanpy.html
 
+Jupyter Book
+
+https://pctbayarea.github.io/stplanpy-book/
 
 git lfs
