@@ -21,12 +21,82 @@ from shapely.geometry import LineString
 from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
-def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
-speed=20, segments=0, reporterrors=1, redirect=0) -> gpd.GeoSeries:
+def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced", speed=20) -> gpd.GeoSeries:
     r"""
-    Compute routes
+    Compute cycling routes
+
+    This function takes origin-destination lines and computes a cycling route
+    between them using the Cycling Streets router.
+    
+    Parameters
+    ----------
+    geom : str, defaults to "geometry"
+        Name of the column that stores the origin-destination lines
+    api_key : str, defaults to None
+        Your registered API key
+    plan : str, defaults to "balanced"
+        The type of route, which can be one of the values: balanced, fastest,
+        quietest. There is also shortest but see the notes below.
+
+            - balanced: We recommend this to be the default route type in your
+              interface - it aims to give practical routes that balance speed
+              and pleasantness, suitable for most riders.
+            - fastest: This route type will tend to favour busier roads that
+              suit more confident riders.
+            - quietest: The route type will produce more pleasant, but often
+              less direct, routes.  
+            - shortest: In general we do not recommend including this in your
+              interface unless you have a need for it, as this will not give
+              particularly practical routes. These will be literally the
+              shortest route, with only land ownership rights causing any
+              deviation from this. It will suggest, for instance, dismounting
+              and walking down the opposite direction of a one-way street, and
+              will gladly route over the top of a hill when that is the shortest
+              distance.
+
+    speed : int, defaults to 20 
+        The maximum speed at which you will ride. Defaults to 20 km/h. The three
+        permitted speeds are 16, 20, and 24 km/h, which correspond roughly to
+        10, 12, and 15 miles per hour.
+
+    Returns
+    -------
+    geopandas.GeoSeries
+        GeoSeries with cycling routes
+    
+    See Also
+    --------
+    ~stplanpy.cycle.read_key
+    
+    Examples
+    --------
+
+    .. code-block:: python
+
+        import pandas as pd
+        import geopandas as gpd
+        from shapely import wkt
+        from stplanpy import cycle
+
+        # Define two origin-destination lines
+        df = pd.DataFrame(
+            {"geometry": [
+            "LINESTRING(-11785727.431 4453819.337, -11782276.436 4448452.023)", 
+            "LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)"]})
+
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry', crs="EPSG:6933")
+
+        # Read the Cycle Streets API key
+        cyclestreets_key = cycle.read_key()
+
+        # Compute routes
+        gdf["geometry"] = gdf.routes(api_key=cyclestreets_key)
     """
-    if (api_key == None ):
+    if (api_key == None):
         raise AttributeError("Please provide an API key")
 
 # Ignore shapely warning while using version 1.8
@@ -37,9 +107,9 @@ speed=20, segments=0, reporterrors=1, redirect=0) -> gpd.GeoSeries:
     base_url += "&key=%s" % api_key
     base_url += "&plan=%s" % plan
     base_url += "&speed=%s" % speed
-    base_url += "&segments=%s" % segments
-    base_url += "&reporterrors=%s" % reporterrors
-    base_url += "&redirect=%s" % redirect
+    base_url += "&segments=0"
+    base_url += "&reporterrors=1"
+    base_url += "&redirect=0"
 
     def routes(x):
 # Extract begin and end longitude and latitude of each geometry
@@ -65,11 +135,7 @@ speed=20, segments=0, reporterrors=1, redirect=0) -> gpd.GeoSeries:
 
 # Convert json into coordinates
         if "marker" in jsn:
-            if (segments == 0):
-                coordinates = jsn["marker"]["@attributes"]["coordinates"]
-            else:
-                coordinates = jsn["marker"][0]["@attributes"]["coordinates"]
-                
+            coordinates = jsn["marker"]["@attributes"]["coordinates"]
             coordinates = re.findall(r'[^,\s]+', coordinates)
             coordinates = list(map(float, coordinates))
             elem = iter(coordinates)
