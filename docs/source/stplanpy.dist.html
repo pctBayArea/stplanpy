@@ -57,21 +57,21 @@
 flow data.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.dist.go_dutch">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.dist.</span></span><span class="sig-name descname"><span class="pre">go_dutch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['all',</span> <span class="pre">'distance',</span> <span class="pre">'gradient']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.dist.go_dutch" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.dist.</span></span><span class="sig-name descname"><span class="pre">go_dutch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['all',</span> <span class="pre">'distance',</span> <span class="pre">'gradient']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="headerlink" href="#stplanpy.dist.go_dutch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply the “go Dutch” scenario.</p>
 <p>This function returns the total number of expected bicyclists under the “go
-Dutch” scenario, <span class="math notranslate nohighlight">\(\text{fd[&quot;all&quot;]} \cdot p_{\text{cycle}}\)</span>. Under this
-scenario people cycle as much as people in Netherlands, taking into account
-differences in the distribution of hilliness and trip distances.
-<span class="math notranslate nohighlight">\(\text{fd[&quot;all&quot;]}\)</span> is the total number of people traveling between an
-origin and a destination using all modes of transportation.
-<span class="math notranslate nohighlight">\(p_{\text{cycle}}\)</span> is the proportion of expected cyclists and is
-defined as <a class="footnote-reference brackets" href="#id2" id="id1">1</a>:</p>
+Dutch” scenario. Under this scenario people cycle as much as people in
+Netherlands do, taking into account both hilliness and trip distance. The total
+number of expected bicyclists is equal to: <span class="math notranslate nohighlight">\(\text{fd[&quot;all&quot;]} \cdot
+p_{\text{cycle}}\)</span>, where <span class="math notranslate nohighlight">\(\text{fd[&quot;all&quot;]}\)</span> is the total number of
+people traveling between an origin and a destination using all modes of
+transportation, and <span class="math notranslate nohighlight">\(p_{\text{cycle}}\)</span> is the proportion of expected
+cyclists <a class="footnote-reference brackets" href="#id2" id="id1">1</a>:</p>
 <div class="math notranslate nohighlight">
 \[\text{logit}(p_{\text{cycle}}) = - 1.436 - 6.7256 \cdot 10^{-4} d
 + 0.05901 \sqrt{d} + 8.05 \cdot 10^{-9} d^2 - 27.10 \nabla + 9.394 \cdot
 10^{-4} d \; \nabla - 0.1624 \sqrt{d} \; \nabla\]</div>
-<p>where <span class="math notranslate nohighlight">\(d\)</span> is the distance in meters and <span class="math notranslate nohighlight">\(\nabla\)</span> is the
+<p>Here <span class="math notranslate nohighlight">\(d\)</span> is the distance in meters and <span class="math notranslate nohighlight">\(\nabla\)</span> is the
 gradient <span class="math notranslate nohighlight">\(h/d\)</span>, with <span class="math notranslate nohighlight">\(h\)</span> the elevation difference in meters
 between the origin and the destination. Only distances smaller than 30 km
 are considered.</p>
@@ -84,11 +84,11 @@ column contains the distance between the origin and the destination, and
 the “gradient” column contains the gradient as defined above.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Dataframe with the total number of expected bicyclists under the “go
-Dutch” scenario.</p>
+<dd class="field-even"><p>Series with the total number of expected bicyclists under the “go Dutch”
+scenario.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+<dd class="field-odd"><p>pandas.Series</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -96,11 +96,31 @@ Dutch” scenario.</p>
 <p><a class="reference internal" href="stplanpy.od.html#stplanpy.od.od_lines" title="stplanpy.od.od_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_lines</span></code></a>, <a class="reference internal" href="stplanpy.od.html#stplanpy.od.distances" title="stplanpy.od.distances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distances</span></code></a>, <a class="reference internal" href="stplanpy.od.html#stplanpy.od.gradient" title="stplanpy.od.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, can be downloaded from github.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">dist</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely</span> <span class="kn">import</span> <span class="n">wkt</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">dist</span>
 
-<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
-<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+<span class="c1"># Define two origin-destination lines</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;LINESTRING(-11785727.431 4453819.337, -11782276.436 4448452.023)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)&quot;</span><span class="p">]})</span>
+
+<span class="c1"># Convert to WTK</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+<span class="c1"># Create GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:6933&quot;</span><span class="p">)</span>
+
+<span class="c1"># compute distances and set gradient to zero</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">distances</span><span class="p">()</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;gradient&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="c1"># Compute go_dutch scenario</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;go_dutch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">go_dutch</span><span class="p">()</span>
 </pre></div>
 </div>
 <p class="rubric">References</p>

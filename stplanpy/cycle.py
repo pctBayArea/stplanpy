@@ -70,7 +70,6 @@ def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
     
     Examples
     --------
-
     .. code-block:: python
 
         import pandas as pd

@@ -8,24 +8,24 @@ import pandas as pd
 import pandas_flavor as pf
 
 @pf.register_dataframe_method
-def go_dutch(fd: pd.DataFrame, column_names=["all", "distance", "gradient"]) -> pd.DataFrame:
+def go_dutch(fd: pd.DataFrame, column_names=["all", "distance", "gradient"]) -> pd.Series:
     r"""
     Apply the "go Dutch" scenario.
 
     This function returns the total number of expected bicyclists under the "go
-    Dutch" scenario, :math:`\text{fd["all"]} \cdot p_{\text{cycle}}`. Under this
-    scenario people cycle as much as people in Netherlands, taking into account
-    differences in the distribution of hilliness and trip distances.
-    :math:`\text{fd["all"]}` is the total number of people traveling between an
-    origin and a destination using all modes of transportation.
-    :math:`p_{\text{cycle}}` is the proportion of expected cyclists and is
-    defined as [1]_:
+    Dutch" scenario. Under this scenario people cycle as much as people in
+    Netherlands do, taking into account both hilliness and trip distance. The total
+    number of expected bicyclists is equal to: :math:`\text{fd["all"]} \cdot
+    p_{\text{cycle}}`, where :math:`\text{fd["all"]}` is the total number of
+    people traveling between an origin and a destination using all modes of
+    transportation, and :math:`p_{\text{cycle}}` is the proportion of expected
+    cyclists [1]_:
 
     .. math:: \text{logit}(p_{\text{cycle}}) = - 1.436 - 6.7256 \cdot 10^{-4} d
         + 0.05901 \sqrt{d} + 8.05 \cdot 10^{-9} d^2 - 27.10 \nabla + 9.394 \cdot
         10^{-4} d \; \nabla - 0.1624 \sqrt{d} \; \nabla
 
-    where :math:`d` is the distance in meters and :math:`\nabla` is the
+    Here :math:`d` is the distance in meters and :math:`\nabla` is the
     gradient :math:`h/d`, with :math:`h` the elevation difference in meters
     between the origin and the destination. Only distances smaller than 30 km
     are considered.
@@ -41,9 +41,9 @@ def go_dutch(fd: pd.DataFrame, column_names=["all", "distance", "gradient"]) -> 
     
     Returns
     -------
-    pandas.DataFrame
-        Dataframe with the total number of expected bicyclists under the "go
-        Dutch" scenario.
+    pandas.Series
+        Series with the total number of expected bicyclists under the "go Dutch"
+        scenario.
     
     See Also
     --------
@@ -53,15 +53,33 @@ def go_dutch(fd: pd.DataFrame, column_names=["all", "distance", "gradient"]) -> 
     
     Examples
     --------
-    The example data file, "`od_data.csv`_", can be downloaded from github.
-
     .. code-block:: python
 
+        import pandas as pd
+        import geopandas as gpd
+        from shapely import wkt
+        from stplanpy import od
         from stplanpy import dist
 
-        flow_data = acs.read_acs("od_data.csv")
-        flow_data = flow_data.clean_acs()
+        # Define two origin-destination lines
+        df = pd.DataFrame({
+            "all": [5, 10],
+            "geometry": [
+            "LINESTRING(-11785727.431 4453819.337, -11782276.436 4448452.023)",
+            "LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)"]})
 
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry', crs="EPSG:6933")
+
+        # compute distances and set gradient to zero
+        gdf["distance"] = gdf.distances()
+        gdf["gradient"] = 0.0
+
+        # Compute go_dutch scenario
+        gdf["go_dutch"] = gdf.go_dutch()
 
     References
     ----------
