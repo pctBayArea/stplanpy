@@ -5,8 +5,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>stplanpy.acs module &#8212; stplanpy 0.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
@@ -51,14 +50,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-stplanpy.acs">
+  <div class="section" id="module-stplanpy.acs">
 <span id="stplanpy-acs-module"></span><h1>stplanpy.acs module<a class="headerlink" href="#module-stplanpy.acs" title="Permalink to this headline">¶</a></h1>
 <p>The functions in this module can be used to import American community survey
-(ACS) 2012-2016 origin destination (OD) data into Pandas. The origin destination
+(ACS) 2012-2016 origin-destination (OD) data into Pandas. The origin-destination
 flow data can be found on the <a class="reference external" href="https://ctpp.transportation.org/2012-2016-5-year-ctpp/">website</a> of the American Association of State
 Highway and Transportation Officials (AASHTO) through their Census
-Transportation Planning Products Program (CTPP). Use Means of transportation
-(18) (Workers 16 years and over) data under Part3: flows. Select Download
+Transportation Planning Products Program (CTPP). Use “Means of transportation
+(18) (Workers 16 years and over)” data under Part3: flows. Select Download
 format: Comma-delimited ASCII format (*.csv), Data format: List format, and
 Remove empty rows.</p>
 <dl class="py function">
@@ -67,7 +66,7 @@ Remove empty rows.</p>
 <dd><p>Clean up and organize ACS flow data.</p>
 <p>American Community Survey (ACS) data has information on many modes of
 transportation and their error margins. This function provides various
-options to simplify this data and reduce and combine various modes of
+options to simplify this data and to reduce and combine various modes of
 transportation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -77,12 +76,12 @@ transportation.</p>
 (<cite>bus</cite>, <cite>streetcar</cite>, <cite>subway</cite>, <cite>railroad</cite>, and <cite>ferry</cite>), and a carpool group
 (<cite>car_2p</cite>, <cite>car_3p</cite>, <cite>car_4p</cite>, <cite>car_5p</cite>, and <cite>car_7p</cite>).</p></li>
 <li><p><strong>home</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – People working from home do not travel. Subtract <cite>home</cite> from <cite>all</cite></p></li>
-<li><p><strong>reduced</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – Only keep <cite>all</cite>, <cite>home</cite>, <cite>walk</cite>, <cite>bike</cite>, <cite>sov</cite>, and groups (if True).</p></li>
+<li><p><strong>reduced</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – Only keep <cite>all</cite>, <cite>home</cite>, <cite>walk</cite>, <cite>bike</cite>, and <cite>sov</cite>, groups (if True).</p></li>
 <li><p><strong>error</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – Keep the error data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Cleaned up dataframe with origin destination data broken down by mode</p>
+<dd class="field-even"><p>Cleaned up DataFrame with origin-destination data broken down by mode</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -93,7 +92,7 @@ transportation.</p>
 <p><a class="reference internal" href="#stplanpy.acs.read_acs" title="stplanpy.acs.read_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_acs</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, can be downloaded from github.</p>
+<p>An example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, can be downloaded from github.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
 
 <span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
@@ -105,12 +104,13 @@ transportation.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.acs.read_acs">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.acs.</span></span><span class="sig-name descname"><span class="pre">read_acs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.acs.read_acs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import ACS origin destination data.</p>
-<p>This function imports ACS 2011-2015 origin destination (OD) data into a
-Pandas dataframe. In the output dataframe there is one row per origin
-destination pair. The column names and their ACS definitions are shown in
-the table below. For each column name there is an additional column with the
-margin of error. E.g. in addition to “all” there is a column “all_error”.</p>
+<dd><p>Import ACS origin-destination data.</p>
+<p>This function imports ACS origin-destination (OD) data into a
+Pandas DataFrame. In the output DataFrame there is one row per
+origin-destination pair. The column names and their ACS definitions are
+shown in the table below. For each column name there is an additional column
+with the margin of error. E.g. in addition to “all” there is a column
+“all_error”.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 21%" />
@@ -192,7 +192,7 @@ margin of error. E.g. in addition to “all” there is a column “all_error”
 <dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – Name and path of an ACS csv file</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Dataframe with origin destination data broken down by mode</p>
+<dd class="field-even"><p>DataFrame with origin destination data broken down by mode</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -203,7 +203,7 @@ margin of error. E.g. in addition to “all” there is a column “all_error”
 <p><a class="reference internal" href="#stplanpy.acs.clean_acs" title="stplanpy.acs.clean_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_acs</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, can be downloaded from github.</p>
+<p>An example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, can be downloaded from github.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
 
 <span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
@@ -211,7 +211,7 @@ margin of error. E.g. in addition to “all” there is a column “all_error”
 </div>
 </dd></dl>
 
-</section>
+</div>
 
 
             <div class="clearer"></div>

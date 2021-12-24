@@ -37,7 +37,7 @@ def directness(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
     return fd[geom].apply(lambda x: direct(x))
 
 @pf.register_dataframe_method
-def reduce(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -> gpd.GeoDataFrame:
+def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -> gpd.GeoDataFrame:
     r"""
     Reduce flow_data to a network
     """

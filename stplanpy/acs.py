@@ -1,10 +1,10 @@
 r"""
 The functions in this module can be used to import American community survey
-(ACS) 2012-2016 origin destination (OD) data into Pandas. The origin destination
+(ACS) 2012-2016 origin-destination (OD) data into Pandas. The origin-destination
 flow data can be found on the `website`_ of the American Association of State
 Highway and Transportation Officials (AASHTO) through their Census
-Transportation Planning Products Program (CTPP). Use Means of transportation
-(18) (Workers 16 years and over) data under Part3: flows. Select Download
+Transportation Planning Products Program (CTPP). Use "Means of transportation
+(18) (Workers 16 years and over)" data under Part3: flows. Select Download
 format: Comma-delimited ASCII format (\*.csv), Data format: List format, and
 Remove empty rows.
 
@@ -16,13 +16,14 @@ import pandas_flavor as pf
 
 def read_acs(file_name):
     r"""
-    Import ACS origin destination data.
+    Import ACS origin-destination data.
 
-    This function imports ACS 2011-2015 origin destination (OD) data into a
-    Pandas dataframe. In the output dataframe there is one row per origin
-    destination pair. The column names and their ACS definitions are shown in
-    the table below. For each column name there is an additional column with the
-    margin of error. E.g. in addition to "all" there is a column "all_error".
+    This function imports ACS origin-destination (OD) data into a
+    Pandas DataFrame. In the output DataFrame there is one row per
+    origin-destination pair. The column names and their ACS definitions are
+    shown in the table below. For each column name there is an additional column
+    with the margin of error. E.g. in addition to "all" there is a column
+    "all_error".
 
     +--------------+-----------------------------------------------------+
     | Column Name  | ACS description                                     |
@@ -78,7 +79,7 @@ def read_acs(file_name):
     Returns
     -------
     pandas.DataFrame
-        Dataframe with origin destination data broken down by mode
+        DataFrame with origin destination data broken down by mode
     
     See Also
     --------
@@ -86,7 +87,7 @@ def read_acs(file_name):
     
     Examples
     --------
-    The example data file, "`od_data.csv`_", can be downloaded from github.
+    An example data file, "`od_data.csv`_", can be downloaded from github.
 
     .. code-block:: python
 
@@ -99,7 +100,7 @@ def read_acs(file_name):
 
     """
 
-# Column names in output data frame
+# Column names in output DataFrame
     column_names = [
         "orig_taz", "dest_taz", 
         "all", "all_error", 
@@ -192,7 +193,7 @@ def read_acs(file_name):
             "Origin", "Destination", 
             "How", "What", "Number"])
 
-# indices of start of data frames     
+# indices of start of DataFrames     
     indices = (raw_data.loc[raw_data["How"].str.contains(
         "Total, means of transportatio") & raw_data[
         "What"].str.contains("Estimate")].index.values)
@@ -203,7 +204,7 @@ def read_acs(file_name):
 # Add index of last row
     indices = np.append(indices, raw_data.tail(1).index.values+1, 0)
 
-# Creat one dataframe per origin destination pair and write data to numpy array
+# Creat one DataFrame per origin destination pair and write data to numpy array
     for i, idx0 in np.ndenumerate(indices[:-1]):
         idx1 = indices[i[0]+1]
         rd = raw_data[idx0:idx1]
@@ -212,7 +213,7 @@ def read_acs(file_name):
         rd = pd.merge(full_data, rd, on=["How", "What"], how="left").fillna(value=0.0)
         np_data[i[0],2:] = rd["Number"].values 
 
-# Convert to dataframe
+# Convert to DataFrame
     fd = pd.DataFrame(data=np_data, columns=column_names)
 
 # Format back to string
@@ -233,7 +234,7 @@ def clean_acs(fd: pd.DataFrame,
 
     American Community Survey (ACS) data has information on many modes of
     transportation and their error margins. This function provides various
-    options to simplify this data and reduce and combine various modes of
+    options to simplify this data and to reduce and combine various modes of
     transportation.
 
     Parameters
@@ -247,14 +248,14 @@ def clean_acs(fd: pd.DataFrame,
     home : bool, defaults to True
         People working from home do not travel. Subtract `home` from `all`
     reduced : bool, defaults to True
-        Only keep `all`, `home`, `walk`, `bike`, `sov`, and groups (if True).
+        Only keep `all`, `home`, `walk`, `bike`, and `sov`, groups (if True).
     error : bool, defaults to True
         Keep the error data.
 
     Returns
     -------
     pandas.DataFrame
-        Cleaned up dataframe with origin destination data broken down by mode
+        Cleaned up DataFrame with origin-destination data broken down by mode
     
     See Also
     --------
@@ -262,7 +263,7 @@ def clean_acs(fd: pd.DataFrame,
     
     Examples
     --------
-    The example data file, "`od_data.csv`_", can be downloaded from github.
+    An example data file, "`od_data.csv`_", can be downloaded from github.
 
     .. code-block:: python
 
