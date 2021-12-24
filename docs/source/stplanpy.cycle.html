@@ -1,0 +1,224 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>stplanpy.cycle module &#8212; stplanpy 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="stplanpy.dist module" href="stplanpy.dist.html" />
+    <link rel="prev" title="stplanpy.acs module" href="stplanpy.acs.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.dist.html" title="stplanpy.dist module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.acs.html" title="stplanpy.acs module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">stplanpy 0.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="stplanpy.html" accesskey="U">stplanpy package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stplanpy.cycle module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-stplanpy.cycle">
+<span id="stplanpy-cycle-module"></span><h1>stplanpy.cycle module<a class="headerlink" href="#module-stplanpy.cycle" title="Permalink to this headline">¶</a></h1>
+<p>The functions in this module are used to retrieve cycling routes from the <a class="reference external" href="https://www.cyclestreets.net">Cycle
+Streets</a> website.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.cycle.read_key">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">read_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cyclestreets_key.txt'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.cycle.read_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a Cycle Streets API key from a file.</p>
+<p>This function reads the Cycle Streets API key from a file. The default file
+name is “cyclestreets_key.txt” and the key should be stored in plain text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key_file</strong> (<em>str</em><em>, </em><em>defaults to &quot;cyclestreets_key.txt&quot;</em>) – Name and path of the file storing the Cycle Streets API key</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cycle Streets API key</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">cycle</span>
+
+<span class="c1"># Read the Cycle Streets API key</span>
+<span class="n">cyclestreets_key</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">read_key</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.cycle.routes">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geoseries.GeoSeries</span></span></span><a class="headerlink" href="#stplanpy.cycle.routes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute cycling routes</p>
+<p>This function takes origin-destination lines and computes a cycling route
+between them using the Cycling Streets router.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column that stores the origin-destination lines</p></li>
+<li><p><strong>api_key</strong> (<em>str</em><em>, </em><em>defaults to None</em>) – Your registered API key</p></li>
+<li><p><strong>plan</strong> (<em>str</em><em>, </em><em>defaults to &quot;balanced&quot;</em>) – <p>The type of route, which can be one of the values: balanced, fastest,
+quietest. There is also shortest but see the notes below.</p>
+<blockquote>
+<div><ul>
+<li><p>balanced: We recommend this to be the default route type in your
+interface - it aims to give practical routes that balance speed
+and pleasantness, suitable for most riders.</p></li>
+<li><p>fastest: This route type will tend to favour busier roads that
+suit more confident riders.</p></li>
+<li><p>quietest: The route type will produce more pleasant, but often
+less direct, routes.</p></li>
+<li><p>shortest: In general we do not recommend including this in your
+interface unless you have a need for it, as this will not give
+particularly practical routes. These will be literally the
+shortest route, with only land ownership rights causing any
+deviation from this. It will suggest, for instance, dismounting
+and walking down the opposite direction of a one-way street, and
+will gladly route over the top of a hill when that is the shortest
+distance.</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>speed</strong> (<em>int</em><em>, </em><em>defaults to 20</em>) – The maximum speed at which you will ride. Defaults to 20 km/h. The three
+permitted speeds are 16, 20, and 24 km/h, which correspond roughly to
+10, 12, and 15 miles per hour.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoSeries with cycling routes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoSeries</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.cycle.read_key" title="stplanpy.cycle.read_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_key</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely</span> <span class="kn">import</span> <span class="n">wkt</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">cycle</span>
+
+<span class="c1"># Define two origin-destination lines</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;LINESTRING(-11785727.431 4453819.337, -11782276.436 4448452.023)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)&quot;</span><span class="p">]})</span>
+
+<span class="c1"># Convert to WTK</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+<span class="c1"># Create GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:6933&quot;</span><span class="p">)</span>
+
+<span class="c1"># Read the Cycle Streets API key</span>
+<span class="n">cyclestreets_key</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">read_key</span><span class="p">()</span>
+
+<span class="c1"># Compute routes</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">routes</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">cyclestreets_key</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="stplanpy.acs.html"
+                        title="previous chapter">stplanpy.acs module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="stplanpy.dist.html"
+                        title="next chapter">stplanpy.dist module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/stplanpy.cycle.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.dist.html" title="stplanpy.dist module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="stplanpy.acs.html" title="stplanpy.acs module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">stplanpy 0.1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="stplanpy.html" >stplanpy package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stplanpy.cycle module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Arnout Boelens.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>
