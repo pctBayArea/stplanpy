@@ -82,27 +82,17 @@ same as the input GeoDataframe.</p>
 </div>
 <p class="rubric">Examples</p>
 <p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from github.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 
 <span class="c1"># Limit calculation to these counties</span>
 <span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
 
-<span class="c1"># Read taz</span>
-<span class="c1"># Extract to temporal location</span>
-<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
-    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-<span class="c1"># Read shape file</span>
-<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/tl_2011_06_taz10.shp&quot;</span><span class="p">)</span>
-<span class="c1"># Clean up tmp files</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read TAZ data from zip file</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
 
-<span class="c1"># Clean up taz GeoDataFrame</span>
 <span class="c1"># Rename columns</span>
 <span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
 <span class="c1"># filter by county</span>
 <span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
 
@@ -123,7 +113,7 @@ latitude, <cite>lat</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<em>str</em>) – Index of the centroid that is modified</p></li>
+<li><p><strong>index</strong> (<em>str</em>) – Index of the centroid that is modified.</p></li>
 <li><p><strong>lon</strong> (<em>float</em>) – New longitude of the corrected centroid. The default coordinate
 reference system (crs) is “EPSG:4326”.</p></li>
 <li><p><strong>lat</strong> (<em>float</em>) – New latitude of the corrected centroid. The default coordinate
@@ -148,44 +138,27 @@ default value is “EPSG:4326”.</p></li>
 </div>
 <p class="rubric">Examples</p>
 <p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from github.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 
 <span class="c1"># Limit calculation to these counties</span>
 <span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
 
-<span class="c1"># Read taz</span>
-<span class="c1"># Extract to temporal location</span>
-<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
-    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-<span class="c1"># Read shape file</span>
-<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/tl_2011_06_taz10.shp&quot;</span><span class="p">)</span>
-<span class="c1"># Clean up tmp files</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read TAZ data from zip file</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
 
-<span class="c1"># Clean up taz GeoDataFrame</span>
 <span class="c1"># Rename columns</span>
 <span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
 <span class="c1"># filter by county</span>
 <span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
 
 <span class="c1"># Compute centroids</span>
 <span class="n">taz_cent</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">cent</span><span class="p">()</span>
 
-<span class="c1"># Correct centroid locations</span>
-<span class="c1"># Google plex</span>
-<span class="n">taz_cent</span><span class="o">.</span><span class="n">corr_cent</span><span class="p">(</span><span class="s2">&quot;00101155&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.07805259936053</span><span class="p">,</span> <span class="mf">37.42332894065777</span><span class="p">)</span>
+<span class="c1"># Correct centroid location</span>
+<span class="n">taz_cent</span><span class="o">.</span><span class="n">corr_cent</span><span class="p">(</span><span class="s2">&quot;00101155&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.078052</span><span class="p">,</span> <span class="mf">37.423328</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stplanpy.geo.find_cent">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">find_cent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geomefry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.geo.find_cent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find centroid coordinates</p>
 </dd></dl>
 
 <dl class="py function">
@@ -197,10 +170,13 @@ this function computes in which county a place is situated. A threshold
 value is used to handle potential misalignment of the borders.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>area_min</strong> (<em>float</em><em>, </em><em>defaults to 0.1</em>) – If ratio of the surface area of a place inside a county devided by the
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cnt</strong> (<em>geopandas.GeoDataFrame</em>) – GeoDataFrame with the county geometries in which the TAZ are located.</p></li>
+<li><p><strong>area_min</strong> (<em>float</em><em>, </em><em>defaults to 0.1</em>) – If ratio of the surface area of a place inside a county devided by the
 full sarface area of a place is smaller than this threshold value, it is
 discarded. This is a workaround for geometries who’s borders are not
-fully aligned.</p>
+fully aligned.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>GeoDataframe with column names “placefp”, “name”, “countyfp”, and
@@ -216,21 +192,13 @@ fully aligned.</p>
 </div>
 <p class="rubric">Examples</p>
 <p>The example data files, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/ca-county-boundaries.zip">ca-county-boundaries.zip</a>” and “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 
 <span class="c1"># Limit calculation to these counties</span>
 <span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
 
-<span class="c1"># Extract to temporal location</span>
-<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;ca-county-boundaries.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
-    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-<span class="c1"># Read county data</span>
-<span class="n">county</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;CA_Counties/CA_Counties_TIGER2016.shp&quot;</span><span class="p">)</span>
-<span class="c1"># Clean up tmp files</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read County data from zip file</span>
+<span class="n">county</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;ca-county-boundaries.zip&quot;</span><span class="p">)</span>
 
 <span class="c1"># Filter on county codes</span>
 <span class="n">county</span> <span class="o">=</span> <span class="n">county</span><span class="p">[</span><span class="n">county</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
@@ -238,13 +206,8 @@ fully aligned.</p>
 <span class="c1"># Select columns to keep</span>
 <span class="n">county</span> <span class="o">=</span> <span class="n">county</span><span class="p">[[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]]</span>
 
-<span class="c1"># Extract to temporal location</span>
-<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
-    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-<span class="c1"># Read place data</span>
-<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;tl_2020_06_place.shp&quot;</span><span class="p">)</span>
-<span class="c1"># Clean up tmp files</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read Place data from zip file</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
 
 <span class="c1"># Rename to Mountain View, Martinez</span>
 <span class="n">place</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;49651&quot;</span><span class="p">),</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Mountain View, Martinez&quot;</span>
@@ -267,6 +230,7 @@ for the parts that are situated within each place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>plc</strong> (<em>geopandas.GeoDataFrame</em>) – GeoDataFrame with the place geometries in which the TAZ are located.</p></li>
 <li><p><strong>area_min</strong> (<em>float</em><em>, </em><em>defaults to 0.001</em>) – If ratio of the surface area of a TAZ inside a place devided by the
 full sarface area of a TAZ is smaller than this threshold value, it is
 discarded. This is a workaround for geometries who’s borders are not
@@ -291,21 +255,13 @@ for geometries who’s borders are not fully aligned.</p></li>
 </div>
 <p class="rubric">Examples</p>
 <p>The example data files,”<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>” and “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from github.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 
 <span class="c1"># Limit calculation to these counties</span>
 <span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
 
-<span class="c1"># Extract to temporal location</span>
-<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
-    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-<span class="c1"># Read taz data</span>
-<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;tl_2011_06_taz10.shp&quot;</span><span class="p">)</span>
-<span class="c1"># Clean up tmp files</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read TAZ data from zip file</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
 
 <span class="c1"># Rename columns for consistency</span>
 <span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
@@ -313,13 +269,8 @@ for geometries who’s borders are not fully aligned.</p></li>
 <span class="c1"># Filter on county codes</span>
 <span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
 
-<span class="c1"># Extract to temporal location</span>
-<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
-    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-<span class="c1"># Read place data</span>
-<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;tl_2020_06_place.shp&quot;</span><span class="p">)</span>
-<span class="c1"># Clean up tmp files</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read Place data from zip file</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
 
 <span class="c1"># Compute which taz lay inside a place and which part</span>
 <span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
@@ -356,22 +307,28 @@ the zip achive in lower case.</p>
 <p><a class="reference internal" href="#stplanpy.geo.to_geojson" title="stplanpy.geo.to_geojson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_geojson</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from github.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
+<p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from
+github. Read a shape file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 
 <span class="c1"># Extract to temporal location</span>
 <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
     <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+
 <span class="c1"># Read taz data from shp file</span>
 <span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;tl_2011_06_taz10.shp&quot;</span><span class="p">)</span>
+
 <span class="c1"># Clean up tmp files</span>
 <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read a shape file from a zip file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 
 <span class="c1"># Read taz data from zip file</span>
-<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_zip</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -400,18 +357,10 @@ default value is “EPSG:4326”.</p>
 </div>
 <p class="rubric">Examples</p>
 <p>The example data file, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, can be downloaded from github.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 
-<span class="c1"># Extract to temporal location</span>
-<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
-    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-<span class="c1"># Read taz data</span>
-<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tmp/&quot;</span> <span class="o">+</span> <span class="s2">&quot;tl_2011_06_taz10.shp&quot;</span><span class="p">)</span>
-<span class="c1"># Clean up tmp files</span>
-<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+<span class="c1"># Read taz data from zip file</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
 
 <span class="c1"># Write to file</span>
 <span class="n">taz</span><span class="o">.</span><span class="n">to_geojson</span><span class="p">(</span><span class="s2">&quot;taz.GeoJson&quot;</span><span class="p">)</span>

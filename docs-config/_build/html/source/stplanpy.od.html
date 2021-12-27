@@ -56,8 +56,51 @@
 or flow data.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.distances">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">distances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.distances" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">distances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute distance along origin-destination lines or routes</p>
+<p>This function computes the distance along origin-destination (od) lines or routes
+in the <cite>fd</cite> GeoDataFrame. <cite>geom</cite> is the name of column containing the od lines
+or routes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column containing the origin-destination lines or routes.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series with distances</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.od.od_lines" title="stplanpy.od.od_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_lines</span></code></a>, <a class="reference internal" href="stplanpy.cycle.html#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely</span> <span class="kn">import</span> <span class="n">wkt</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Define two origin-destination lines</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;orig_taz&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;73906&quot;</span><span class="p">,</span> <span class="s2">&quot;00106&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;dest_taz&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;00120&quot;</span><span class="p">,</span> <span class="s2">&quot;04120&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;LINESTRING(-91785727.431 4453819.337, -11782276.436 4448452.023)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)&quot;</span><span class="p">]})</span>
+
+<span class="c1"># Convert to WTK</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+<span class="c1"># Create GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:6933&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute distances</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">distances</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.frm">
@@ -102,38 +145,159 @@ origins and destinations.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.od_lines">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">od_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.od_lines" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute origin-destination lines.</p>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">od_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.od_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute origin-destination lines</p>
 <p>Compute origin-destination lines for all origin-destination pairs in
-dataframe <cite>fd</cite>. The <cite>centroids</cite> dataframe contains the coordinates of all the
-origins and destinations.</p>
+GeoDataFrame <cite>fd</cite>. The <cite>centroids</cite> GeoDataFrame contains the coordinates of
+all the origins and destinations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>centroids</strong> (<em>pd.DataFrame</em>) – </p></li>
-<li><p><strong>orig=&quot;orig_taz&quot;</strong> – </p></li>
-<li><p><strong>dest=&quot;dest_taz&quot;</strong> – </p></li>
+<li><p><strong>centroids</strong> (<em>geopandas.GeoDataFrame</em>) – GeoDataFrame with the coordinates of all the locations in the <cite>fd</cite>
+GeoDataFrame.</p></li>
+<li><p><strong>orig</strong> (<em>str</em><em>, </em><em>defaults to &quot;orig_taz&quot;</em>) – Column name of the <cite>fd</cite> GeoDataFrame containing all origin codes.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em>, </em><em>defaults to &quot;dest_taz&quot;</em>) – Column name of the <cite>fd</cite> GeoDataFrame containing all destination codes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Cleaned up dataframe with origin destination data broken down by mode</p>
+<dd class="field-even"><p>GeoSeries with origin-destination lines</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+<dd class="field-odd"><p>geopandas.GeoSeries</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="stplanpy.acs.html#stplanpy.acs.read_acs" title="stplanpy.acs.read_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_acs</span></code></a></p>
+<p><a class="reference internal" href="#stplanpy.od.orig_dest" title="stplanpy.od.orig_dest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orig_dest</span></code></a>, <a class="reference internal" href="stplanpy.geo.html#stplanpy.geo.cent" title="stplanpy.geo.cent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cent</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<p>The example data file, , can be downloaded from github.</p>
+<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, and
+“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Read origin-destination flow data</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+
+<span class="c1"># San Francisco Bay Area counties</span>
+<span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
+
+<span class="c1"># Place code East Palo Alto</span>
+<span class="n">places</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;20956&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read place data</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Keep only East Palo Alto</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">places</span><span class="p">)]</span>
+
+<span class="c1"># Read taz data</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rename columns for consistency</span>
+<span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Filter on county codes</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
+
+<span class="c1"># Compute centroids</span>
+<span class="n">taz_cent</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">cent</span><span class="p">()</span>
+
+<span class="c1"># Compute which taz lay inside a place and which part</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
+
+<span class="c1"># Add county and place codes to data frame.</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
+
+<span class="c1"># Compute origin-destination lines</span>
+<span class="n">flow_data</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">od_lines</span><span class="p">(</span><span class="n">taz_cent</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.orig_dest">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">orig_dest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.orig_dest" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">orig_dest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taz_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tazce'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plc_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'placefp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cnt_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'countyfp'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.orig_dest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add County and Place codes to origin-destination data</p>
+<p>This function adds County and Census Designated Place codes from the
+GeoDataFrame <cite>taz</cite> to the origin-destination or flow GeoDataFrame <cite>fd</cite>. The
+relevant column names are defined in <cite>taz_name</cite>, <cite>plc_name</cite>, and <cite>cnt_name</cite>,
+respectively. The column names in the output GeoDataFrame are “orig_taz”,
+“dest_taz”, “orig_plc”, “dest_plc”, “orig_cnt”, and “dest_cnt”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>taz</strong> (<em>geopandas.GeoDataFrame</em>) – GeoDataFrame containing Traffic Analysis (TAZ) codes, Census Designated
+Place codes, and County codes.</p></li>
+<li><p><strong>taz_name</strong> (<em>str</em><em>, </em><em>defaults to &quot;tazce&quot;</em>) – Column name in <cite>taz</cite> GeoDataFrame that contains TAZ codes. Defaults to
+“tazce”.</p></li>
+<li><p><strong>plc_name</strong> (<em>str</em><em>, </em><em>defaults to &quot;placefp&quot;</em>) – Column name in <cite>taz</cite> GeoDataFrame that contains Census Designated Place
+codes. Defaults to “placefp”.</p></li>
+<li><p><strong>cnt_name</strong> (<em>str</em><em>, </em><em>defaults to &quot;countyfp&quot;</em>) – Column name in <cite>taz</cite> GeoDataFrame that contains County codes. Defaults
+to “countyfp”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataFrame with origin and destination TAZ, County, and Place codes.
+The column names are “orig_taz”, “dest_taz”, “orig_plc”, “dest_plc”,
+“orig_cnt”, and “dest_cnt”.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="stplanpy.acs.html#stplanpy.acs.read_acs" title="stplanpy.acs.read_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_acs</span></code></a>, <a class="reference internal" href="stplanpy.geo.html#stplanpy.geo.in_place" title="stplanpy.geo.in_place"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_place</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, and
+“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Read origin-destination flow data</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+
+<span class="c1"># San Francisco Bay Area counties</span>
+<span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
+
+<span class="c1"># Place code East Palo Alto</span>
+<span class="n">places</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;20956&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read place data</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Keep only East Palo Alto</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">places</span><span class="p">)]</span>
+
+<span class="c1"># Read taz data</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rename columns for consistency</span>
+<span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Filter on county codes</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
+
+<span class="c1"># Compute which taz lay inside a place and which part</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
+
+<span class="c1"># Add county and place codes to data frame.</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.od.rm_taz">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">rm_taz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.od.rm_taz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove TAZ</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.to">

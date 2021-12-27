@@ -50,7 +50,10 @@ def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -
     gdf = fd[mode]
 
 # Drop all columns where all modes are zero
-    gdf = gdf[gdf[modes].values.sum(axis=1) != 0]
+    gdf = gdf.loc[gdf[modes].values.sum(axis=1) != 0]
+
+# Drop all non LineString gometries 
+    gdf = gdf.loc[gdf.geom_type == "LineString"]
 
     def segments(curve):
         return MultiLineString(list(map(LineString, zip(curve.coords[:-1], curve.coords[1:]))))

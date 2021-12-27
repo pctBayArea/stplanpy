@@ -146,8 +146,8 @@ def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
             else:
                 warnings.warn("No route found. Please relocate one of the \
 centroids closer to a road using the corr_cent function in the geo module. \
-The tazce codes of the centrods can be found with find_cent function in the \
-geo module.", Warning, stacklevel=2)
+The tazce codes of the centroids can be found with find_cent function in this \
+module.", Warning, stacklevel=2)
                 return Point(x0,y0)
 
     return gpd.GeoSeries(fd[geom].to_crs("EPSG:4326").apply(lambda x: routes(x)), crs="EPSG:4326").to_crs(fd.crs)
@@ -188,3 +188,68 @@ def read_key(key_file="cyclestreets_key.txt"):
             key = str(line).strip()
 
     return key
+
+@pf.register_dataframe_method
+def find_cent(fd: gpd.GeoDataFrame, orig="orig_taz", dest="dest_taz"):
+    r"""
+    Find centroid tazce codes
+
+    If the  :func:`~stplanpy.cycle.routes` function is not able to find a route
+    between two locations it returns a "Point" geometry. This function can be
+    used to find these points and writes the tazce codes of the origin and
+    destination to screen. 
+    
+    Parameters
+    ----------
+    orig : str, defaults to "orig_taz"
+        Column name that contains origin tazce codes.
+    dest : str, defaults to "dest_taz"
+        Column name that contains destination tazce codes.
+ 
+    Returns
+    -------
+    None
+    
+    See Also
+    --------
+    ~stplanpy.cycle.routes
+    
+    Examples
+    --------
+    .. code-block:: python
+
+        import pandas as pd
+        import geopandas as gpd
+        from shapely import wkt
+        from stplanpy import cycle
+
+        # Define two origin-destination lines
+        df = pd.DataFrame({
+            "orig_taz" : ["73906", "00106"],
+            "dest_taz" : ["00120", "04120"],
+            "geometry": [
+            "LINESTRING(-91785727.431 4453819.337, -11782276.436 4448452.023)",
+            "LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)"]})
+
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry', crs="EPSG:6933")
+
+        # Read the Cycle Streets API key
+        cyclestreets_key = cycle.read_key()
+
+        # Compute routes
+        gdf["geometry"] = gdf.routes(api_key=cyclestreets_key)
+        gdf.find_cent()
+
+    """
+# Find rows with Point geometry type    
+    fd = fd.loc[fd.geom_type == "Point"]
+
+# Print the origin and destination tazce values
+    if not fd.empty:
+        print(fd[[orig, dest]])
+      
+    return None

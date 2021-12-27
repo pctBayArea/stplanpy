@@ -12,32 +12,85 @@ from shapely.geometry import LineString
 from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
-def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="dest_taz") -> pd.DataFrame:
+def od_lines(fd: gpd.GeoDataFrame, centroids: gpd.GeoDataFrame, orig="orig_taz", dest="dest_taz") -> gpd.GeoDataFrame:
     r"""
-    Compute origin-destination lines.
+    Compute origin-destination lines
 
     Compute origin-destination lines for all origin-destination pairs in
-    dataframe `fd`. The `centroids` dataframe contains the coordinates of all the
-    origins and destinations.
+    GeoDataFrame `fd`. The `centroids` GeoDataFrame contains the coordinates of
+    all the origins and destinations.
     
     Parameters
     ----------
-    centroids: pd.DataFrame
-    orig="orig_taz"
-    dest="dest_taz"
+    centroids: geopandas.GeoDataFrame
+        GeoDataFrame with the coordinates of all the locations in the `fd`
+        GeoDataFrame.
+    orig : str, defaults to "orig_taz"
+        Column name of the `fd` GeoDataFrame containing all origin codes.
+    dest : str, defaults to "dest_taz"
+        Column name of the `fd` GeoDataFrame containing all destination codes.
     
     Returns
     -------
-    pandas.DataFrame
-        Cleaned up dataframe with origin destination data broken down by mode
+    geopandas.GeoSeries
+        GeoSeries with origin-destination lines 
     
     See Also
     --------
-    ~stplanpy.acs.read_acs
+    ~stplanpy.od.orig_dest
+    ~stplanpy.geo.cent
     
     Examples
     --------
-    The example data file, , can be downloaded from github.
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_", and
+    "`tl_2020_06_place.zip`_", can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import geo
+        from stplanpy import od
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # San Francisco Bay Area counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Place code East Palo Alto
+        places = ["20956"]
+
+        # Read place data
+        place = geo.read_shp("tl_2020_06_place.zip")
+
+        # Keep only East Palo Alto
+        place = place[place["placefp"].isin(places)]
+
+        # Read taz data
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Compute centroids
+        taz_cent = taz.cent()
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+        # Add county and place codes to data frame.
+        flow_data = flow_data.orig_dest(taz)
+
+        # Compute origin-destination lines
+        flow_data["geometry"] = flow_data.od_lines(taz_cent)
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     """
 # Ignore shapely warning while using version 1.8
     warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
@@ -49,11 +102,59 @@ def od_lines(fd: pd.DataFrame, centroids: pd.DataFrame, orig="orig_taz", dest="d
         y1 = centroids.loc[centroids["tazce"] == x[1], "geometry"].iloc[0].y
         return LineString([(x0,y0), (x1,y1)])   
     
-    return fd[[orig, dest]].apply(lambda x: lines(*x), axis=1)
+    return gpd.GeoSeries(fd[[orig, dest]].apply(lambda x: lines(*x), axis=1), crs=fd.crs)
 
 @pf.register_dataframe_method
-def distances(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
+def distances(fd: gpd.GeoDataFrame, geom="geometry") -> gpd.GeoDataFrame:
+    r"""
+    Compute distance along origin-destination lines or routes
+
+    This function computes the distance along origin-destination (od) lines or routes
+    in the `fd` GeoDataFrame. `geom` is the name of column containing the od lines
+    or routes.
     
+    Parameters
+    ----------
+    geom : str, defaults to "geometry"
+        Name of the column containing the origin-destination lines or routes.
+    
+    Returns
+    -------
+    pandas.Series
+        Series with distances
+    
+    See Also
+    --------
+    ~stplanpy.od.od_lines
+    ~stplanpy.cycle.routes
+    
+    Examples
+    --------
+    .. code-block:: python
+
+        import pandas as pd
+        import geopandas as gpd
+        from shapely import wkt
+        from stplanpy import od
+
+        # Define two origin-destination lines
+        df = pd.DataFrame({
+            "orig_taz" : ["73906", "00106"],
+            "dest_taz" : ["00120", "04120"],
+            "geometry": [
+            "LINESTRING(-91785727.431 4453819.337, -11782276.436 4448452.023)",
+            "LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)"]})
+
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry', crs="EPSG:6933")
+
+        # Compute distances
+        gdf["distance"] = gdf.distances()
+    
+    """
     def f(x):
         return x.length
     
@@ -74,35 +175,118 @@ def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz",
     return fd[[orig, dest, dist]].apply(lambda x: grad(*x), axis=1)
 
 @pf.register_dataframe_method
-def orig_dest(fd: pd.DataFrame, taz: pd.DataFrame) -> pd.DataFrame:
+def orig_dest(fd: gpd.GeoDataFrame, taz: gpd.GeoDataFrame, taz_name="tazce", plc_name="placefp", cnt_name="countyfp") -> gpd.GeoDataFrame:
+    r"""
+    Add County and Place codes to origin-destination data           
 
+    This function adds County and Census Designated Place codes from the
+    GeoDataFrame `taz` to the origin-destination or flow GeoDataFrame `fd`. The
+    relevant column names are defined in `taz_name`, `plc_name`, and `cnt_name`,
+    respectively. The column names in the output GeoDataFrame are "orig_taz",
+    "dest_taz", "orig_plc", "dest_plc", "orig_cnt", and "dest_cnt". 
+    
+    Parameters
+    ----------
+    taz : geopandas.GeoDataFrame
+        GeoDataFrame containing Traffic Analysis (TAZ) codes, Census Designated
+        Place codes, and County codes.
+    taz_name : str, defaults to "tazce"
+        Column name in `taz` GeoDataFrame that contains TAZ codes. Defaults to
+        "tazce".
+    plc_name : str, defaults to "placefp"
+        Column name in `taz` GeoDataFrame that contains Census Designated Place
+        codes. Defaults to "placefp".
+    cnt_name : str, defaults to "countyfp"
+        Column name in `taz` GeoDataFrame that contains County codes. Defaults
+        to "countyfp".
+    
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataFrame with origin and destination TAZ, County, and Place codes.
+        The column names are "orig_taz", "dest_taz", "orig_plc", "dest_plc",
+        "orig_cnt", and "dest_cnt". 
+    
+    See Also
+    --------
+    ~stplanpy.acs.read_acs
+    ~stplanpy.geo.in_place
+    
+    Examples
+    --------
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_", and
+    "`tl_2020_06_place.zip`_", can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import geo
+        from stplanpy import od
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # San Francisco Bay Area counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Place code East Palo Alto
+        places = ["20956"]
+
+        # Read place data
+        place = geo.read_shp("tl_2020_06_place.zip")
+
+        # Keep only East Palo Alto
+        place = place[place["placefp"].isin(places)]
+
+        # Read taz data
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+        # Add county and place codes to data frame.
+        flow_data = flow_data.orig_dest(taz)
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
+    """
 # Drop lines that have no valid countyfp or placefp. i.e. are not within a
 # county or place
-    cnt = taz.dropna(subset=["countyfp"])
-    plc = taz.dropna(subset=["placefp"])
+    cnt = taz.dropna(subset=[cnt_name])
+    cnt = cnt.drop(columns = "geometry")
+    plc = taz.dropna(subset=[plc_name])
+    plc = plc.drop(columns = "geometry") 
 # We do not know the distribution of origins or destinations within a TAZ.
 # Therefore, add TAZ to place if more than 0.5 of its surface area is within
 # this place.
     plc = plc.loc[plc["area"] > 0.5]
 
 # Merge on countyfp codes
-    fd = fd.merge(cnt, how="left", left_on="orig_taz",right_on="tazce")
-    fd.rename(columns = {"countyfp":"orig_cnt"}, inplace = True)
-    fd = fd.drop(columns=["tazce", "placefp", "geometry", "area"])
-    fd = fd.merge(cnt, how="left", left_on="dest_taz",right_on="tazce")
-    fd.rename(columns = {"countyfp":"dest_cnt"}, inplace = True)
-    fd = fd.drop(columns=["tazce", "placefp", "geometry", "area"])
+    fd = fd.merge(cnt, how="left", left_on="orig_taz",right_on=taz_name)
+    fd.rename(columns = {cnt_name:"orig_cnt"}, inplace = True)
+    fd = fd.drop(columns=[taz_name, plc_name, "area"])
+    fd = fd.merge(cnt, how="left", left_on="dest_taz",right_on=taz_name)
+    fd.rename(columns = {cnt_name:"dest_cnt"}, inplace = True)
+    fd = fd.drop(columns=[taz_name, plc_name, "area"])
 
 # Merge on placefp codes
-    fd = fd.merge(plc, how="left", left_on="orig_taz",right_on="tazce")
-    fd.rename(columns = {"placefp":"orig_plc"}, inplace = True)
-    fd = fd.drop(columns=["tazce", "countyfp", "geometry", "area"])
-    fd = fd.merge(plc, how="left", left_on="dest_taz",right_on="tazce")
-    fd.rename(columns = {"placefp":"dest_plc"}, inplace = True)
-    fd = fd.drop(columns=["tazce", "countyfp", "geometry", "area"])
+    fd = fd.merge(plc, how="left", left_on="orig_taz",right_on=taz_name)
+    fd.rename(columns = {plc_name:"orig_plc"}, inplace = True)
+    fd = fd.drop(columns=[taz_name, cnt_name, "area"])
+    fd = fd.merge(plc, how="left", left_on="dest_taz",right_on=taz_name)
+    fd.rename(columns = {plc_name:"dest_plc"}, inplace = True)
+    fd = fd.drop(columns=[taz_name, cnt_name, "area"])
 
 # Clean up data frame
-    fd.fillna(value="", inplace=True)
+    fd.fillna({"orig_plc":"", "dest_plc":""}, inplace=True)
 
     return fd
 
@@ -235,3 +419,10 @@ def to_frm(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
         raise Exception("code not recognized")
 
     return fd.loc[(fd[orig] == code) | (fd[dest] == code)]
+
+@pf.register_dataframe_method
+def rm_taz(fd: gpd.GeoDataFrame, code, orig="orig_taz", dest="dest_taz"):
+    r"""
+    Remove TAZ
+    """
+    return fd.loc[(fd[orig] != code) & (fd[dest] != code)]

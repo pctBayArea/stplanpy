@@ -1,6 +1,6 @@
 r"""
 The functions in this module can be used to import American community survey
-(ACS) 2012-2016 origin-destination (OD) data into Pandas. The origin-destination
+(ACS) origin-destination (OD) data into Pandas. The origin-destination
 flow data can be found on the `website`_ of the American Association of State
 Highway and Transportation Officials (AASHTO) through their Census
 Transportation Planning Products Program (CTPP). Use "Means of transportation
@@ -12,18 +12,19 @@ Remove empty rows.
 """
 import numpy as np
 import pandas as pd
+import geopandas as gpd
 import pandas_flavor as pf
 
-def read_acs(file_name):
+def read_acs(file_name, crs="EPSG:6933") -> gpd.GeoDataFrame:
     r"""
     Import ACS origin-destination data.
 
-    This function imports ACS origin-destination (OD) data into a
-    Pandas DataFrame. In the output DataFrame there is one row per
+    This function imports ACS origin-destination (OD) data into a GeoPandas
+    GeoDataFrame. In the output GeoDataFrame there is one row per
     origin-destination pair. The column names and their ACS definitions are
     shown in the table below. For each column name there is an additional column
     with the margin of error. E.g. in addition to "all" there is a column
-    "all_error".
+    "all_error". The geometry column value is None.
 
     +--------------+-----------------------------------------------------+
     | Column Name  | ACS description                                     |
@@ -74,12 +75,15 @@ def read_acs(file_name):
     Parameters
     ----------
     file_name : str
-        Name and path of an ACS csv file
+        Name and path of an ACS csv file.
+    crs : str, defaults to "EPSG:6933"
+        The coordinate reference system (crs) of the output GeoDataFrame. The
+        default value is "EPSG:6933".
 
     Returns
     -------
-    pandas.DataFrame
-        DataFrame with origin destination data broken down by mode
+    geopandas.GeoDataFrame
+        GeoDataFrame with origin destination data broken down by mode
     
     See Also
     --------
@@ -220,15 +224,17 @@ def read_acs(file_name):
     fd["orig_taz"] = fd["orig_taz"].apply("{:0>8.0f}".format)
     fd["dest_taz"] = fd["dest_taz"].apply("{:0>8.0f}".format)
 
-    return fd
+    fd["geometry"] = None
+
+    return gpd.GeoDataFrame(fd, geometry="geometry", crs=crs)
 
 @pf.register_dataframe_method
-def clean_acs(fd: pd.DataFrame, 
+def clean_acs(fd: gpd.GeoDataFrame, 
         returns=False, 
         groups=True, 
         home=True,
         reduced=True, 
-        error=True) -> pd.DataFrame:
+        error=True) -> gpd.GeoDataFrame:
     r"""
     Clean up and organize ACS flow data.
 
@@ -254,8 +260,8 @@ def clean_acs(fd: pd.DataFrame,
 
     Returns
     -------
-    pandas.DataFrame
-        Cleaned up DataFrame with origin-destination data broken down by mode
+    geopandas.GeoDataFrame
+        Cleaned up GeoDataFrame with origin-destination data broken down by mode
     
     See Also
     --------
@@ -272,10 +278,6 @@ def clean_acs(fd: pd.DataFrame,
         flow_data = acs.read_acs("od_data.csv")
         flow_data = flow_data.clean_acs()
     """        
-
-#    if "latitude" not in obj.columns or "longitude" not in obj.columns:
-#            raise AttributeError("Must have 'latitude' and 'longitude'.")
-
     if (returns):
 # Add return data for commute trips per day
         df = fd.copy()
@@ -362,7 +364,8 @@ def clean_acs(fd: pd.DataFrame,
             "transit",
             "transit_error",
             "carpool",
-            "carpool_error"]]
+            "carpool_error",
+            "geometry"]]
     elif (reduced and not groups):
 # Columns to keep
         fd = fd[[
@@ -377,7 +380,8 @@ def clean_acs(fd: pd.DataFrame,
             "bike",
             "bike_error",
             "sov",
-            "sov_error"]]
+            "sov_error",
+            "geometry"]]
 
     if not (error):
         fd = fd[fd.columns.drop(list(fd.filter(regex="_error")))]

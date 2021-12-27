@@ -53,7 +53,7 @@
   <div class="section" id="module-stplanpy.acs">
 <span id="stplanpy-acs-module"></span><h1>stplanpy.acs module<a class="headerlink" href="#module-stplanpy.acs" title="Permalink to this headline">¶</a></h1>
 <p>The functions in this module can be used to import American community survey
-(ACS) 2012-2016 origin-destination (OD) data into Pandas. The origin-destination
+(ACS) origin-destination (OD) data into Pandas. The origin-destination
 flow data can be found on the <a class="reference external" href="https://ctpp.transportation.org/2012-2016-5-year-ctpp/">website</a> of the American Association of State
 Highway and Transportation Officials (AASHTO) through their Census
 Transportation Planning Products Program (CTPP). Use “Means of transportation
@@ -62,7 +62,7 @@ format: Comma-delimited ASCII format (*.csv), Data format: List format, and
 Remove empty rows.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.acs.clean_acs">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.acs.</span></span><span class="sig-name descname"><span class="pre">clean_acs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">home</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.acs.clean_acs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.acs.</span></span><span class="sig-name descname"><span class="pre">clean_acs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">home</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.acs.clean_acs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean up and organize ACS flow data.</p>
 <p>American Community Survey (ACS) data has information on many modes of
 transportation and their error margins. This function provides various
@@ -81,10 +81,10 @@ transportation.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Cleaned up DataFrame with origin-destination data broken down by mode</p>
+<dd class="field-even"><p>Cleaned up GeoDataFrame with origin-destination data broken down by mode</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -103,14 +103,14 @@ transportation.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.acs.read_acs">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.acs.</span></span><span class="sig-name descname"><span class="pre">read_acs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.acs.read_acs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.acs.</span></span><span class="sig-name descname"><span class="pre">read_acs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:6933'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.acs.read_acs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import ACS origin-destination data.</p>
-<p>This function imports ACS origin-destination (OD) data into a
-Pandas DataFrame. In the output DataFrame there is one row per
+<p>This function imports ACS origin-destination (OD) data into a GeoPandas
+GeoDataFrame. In the output GeoDataFrame there is one row per
 origin-destination pair. The column names and their ACS definitions are
 shown in the table below. For each column name there is an additional column
 with the margin of error. E.g. in addition to “all” there is a column
-“all_error”.</p>
+“all_error”. The geometry column value is None.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 21%" />
@@ -189,13 +189,17 @@ with the margin of error. E.g. in addition to “all” there is a column
 </table>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – Name and path of an ACS csv file</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> (<em>str</em>) – Name and path of an ACS csv file.</p></li>
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>defaults to &quot;EPSG:6933&quot;</em>) – The coordinate reference system (crs) of the output GeoDataFrame. The
+default value is “EPSG:6933”.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>DataFrame with origin destination data broken down by mode</p>
+<dd class="field-even"><p>GeoDataFrame with origin destination data broken down by mode</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
 </dd>
 </dl>
 <div class="admonition seealso">

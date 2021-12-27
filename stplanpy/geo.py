@@ -47,11 +47,11 @@ def read_shp(file_name, tmp_dir="tmp", crs="EPSG:6933"):
     
     Examples
     --------
-    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from github.
+    The example data file, "`tl_2011_06_taz10.zip`_", can be downloaded from
+    github. Read a shape file:
  
     .. code-block:: python
 
-        import os
         import shutil
         import zipfile
         from stplanpy import geo
@@ -59,13 +59,21 @@ def read_shp(file_name, tmp_dir="tmp", crs="EPSG:6933"):
         # Extract to temporal location
         with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
             zip_ref.extractall("tmp")
+        
         # Read taz data from shp file
         taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
+        
         # Clean up tmp files
         shutil.rmtree("tmp")
 
+    Read a shape file from a zip file:
+
+    .. code-block:: python
+
+        from stplanpy import geo
+
         # Read taz data from zip file
-        taz = geo.read_zip("tl_2011_06_taz10.zip")
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
 
     .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
@@ -123,18 +131,10 @@ def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
  
     .. code-block:: python
 
-        import os
-        import shutil
-        import zipfile
         from stplanpy import geo
 
-        # Extract to temporal location
-        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read taz data
-        taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
+        # Read taz data from zip file
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
 
         # Write to file
         taz.to_geojson("taz.GeoJson")
@@ -156,6 +156,8 @@ def in_county(plc: gpd.GeoDataFrame, cnt: gpd.GeoDataFrame, area_min=0.1) -> gpd
 
     Parameters
     ----------
+    cnt : geopandas.GeoDataFrame
+        GeoDataFrame with the county geometries in which the TAZ are located.
     area_min : float, defaults to 0.1
         If ratio of the surface area of a place inside a county devided by the
         full sarface area of a place is smaller than this threshold value, it is
@@ -178,21 +180,13 @@ def in_county(plc: gpd.GeoDataFrame, cnt: gpd.GeoDataFrame, area_min=0.1) -> gpd
  
     .. code-block:: python
 
-        import os
-        import shutil
-        import zipfile
         from stplanpy import geo
 
         # Limit calculation to these counties
         counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
 
-        # Extract to temporal location
-        with zipfile.ZipFile("ca-county-boundaries.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read county data
-        county = geo.read_shp("tmp/" + "CA_Counties/CA_Counties_TIGER2016.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
+        # Read County data from zip file
+        county = geo.read_shp("ca-county-boundaries.zip")
 
         # Filter on county codes
         county = county[county["countyfp"].isin(counties)]
@@ -200,13 +194,8 @@ def in_county(plc: gpd.GeoDataFrame, cnt: gpd.GeoDataFrame, area_min=0.1) -> gpd
         # Select columns to keep
         county = county[["name", "countyfp", "geometry"]]
 
-        # Extract to temporal location
-        with zipfile.ZipFile("tl_2020_06_place.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read place data
-        place = geo.read_shp("tmp/" + "tl_2020_06_place.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
+        # Read Place data from zip file
+        place = geo.read_shp("tl_2020_06_place.zip")
 
         # Rename to Mountain View, Martinez
         place.loc[(place["placefp"] == "49651"), "name"] = "Mountain View, Martinez"
@@ -243,6 +232,8 @@ def in_place(taz: gpd.GeoDataFrame, plc: gpd.GeoDataFrame, area_min=0.001, area_
 
     Parameters
     ----------
+    plc : geopandas.GeoDataFrame
+        GeoDataFrame with the place geometries in which the TAZ are located.
     area_min : float, defaults to 0.001
         If ratio of the surface area of a TAZ inside a place devided by the
         full sarface area of a TAZ is smaller than this threshold value, it is
@@ -270,21 +261,13 @@ def in_place(taz: gpd.GeoDataFrame, plc: gpd.GeoDataFrame, area_min=0.001, area_
  
     .. code-block:: python
 
-        import os
-        import shutil
-        import zipfile
         from stplanpy import geo
 
         # Limit calculation to these counties
         counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
 
-        # Extract to temporal location
-        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read taz data
-        taz = geo.read_shp("tmp/" + "tl_2011_06_taz10.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
+        # Read TAZ data from zip file
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
 
         # Rename columns for consistency
         taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
@@ -292,13 +275,8 @@ def in_place(taz: gpd.GeoDataFrame, plc: gpd.GeoDataFrame, area_min=0.001, area_
         # Filter on county codes
         taz = taz[taz["countyfp"].isin(counties)]
 
-        # Extract to temporal location
-        with zipfile.ZipFile("tl_2020_06_place.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read place data
-        place = geo.read_shp("tmp/" + "tl_2020_06_place.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
+        # Read Place data from zip file
+        place = geo.read_shp("tl_2020_06_place.zip")
 
         # Compute which taz lay inside a place and which part
         taz = taz.in_place(place)
@@ -371,27 +349,17 @@ def cent(gdf: gpd.GeoDataFrame, column_name="tazce") -> gpd.GeoDataFrame:
  
     .. code-block:: python
  
-        import os
-        import shutil
-        import zipfile
         from stplanpy import geo
         
         # Limit calculation to these counties
         counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
 
-        # Read taz
-        # Extract to temporal location
-        os.makedirs("tmp", exist_ok=True)
-        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read shape file
-        taz = geo.read_shp("tmp/tl_2011_06_taz10.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
+        # Read TAZ data from zip file
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
 
-        # Clean up taz GeoDataFrame
         # Rename columns
         taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
         # filter by county   
         taz = taz[taz["countyfp"].isin(counties)]
 
@@ -415,7 +383,7 @@ def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="E
     Parameters
     ----------
     index : str
-        Index of the centroid that is modified
+        Index of the centroid that is modified.
     lon : float
         New longitude of the corrected centroid. The default coordinate
         reference system (crs) is "EPSG:4326".
@@ -445,36 +413,25 @@ def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="E
  
     .. code-block:: python
  
-        import os
-        import shutil
-        import zipfile
         from stplanpy import geo
         
         # Limit calculation to these counties
         counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
 
-        # Read taz
-        # Extract to temporal location
-        os.makedirs("tmp", exist_ok=True)
-        with zipfile.ZipFile("tl_2011_06_taz10.zip", "r") as zip_ref:
-            zip_ref.extractall("tmp")
-        # Read shape file
-        taz = geo.read_shp("tmp/tl_2011_06_taz10.shp")
-        # Clean up tmp files
-        shutil.rmtree("tmp")
+        # Read TAZ data from zip file
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
 
-        # Clean up taz GeoDataFrame
         # Rename columns
         taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
         # filter by county   
         taz = taz[taz["countyfp"].isin(counties)]
 
         # Compute centroids
         taz_cent = taz.cent()
 
-        # Correct centroid locations
-        # Google plex
-        taz_cent.corr_cent("00101155", -122.07805259936053, 37.42332894065777)
+        # Correct centroid location
+        taz_cent.corr_cent("00101155", -122.078052, 37.423328)
     
     .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
@@ -485,18 +442,3 @@ def corr_cent(gdf: gpd.GeoDataFrame, index, lon, lat, index_name="tazce", crs="E
     gdf.loc[gdf[index_name] == index, "geometry"] = corr.loc[0]
       
     return gdf
-
-@pf.register_dataframe_method
-def find_cent(fd: gpd.GeoDataFrame, geom="geomefry", orig="orig_taz", dest="dest_taz"):
-    r"""
-    Find centroid coordinates
-
-    """
-# Find rows with Point geometry type    
-    fd = fd.loc[fd.geom_type == "Point"]
-
-# Print the origin and destination tazce values
-    if not fd.empty:
-        print(fd[[orig, dest]])
-      
-    return None

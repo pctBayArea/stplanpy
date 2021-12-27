@@ -55,6 +55,62 @@
 <p>The functions in this module are used to retrieve cycling routes from the <a class="reference external" href="https://www.cyclestreets.net">Cycle
 Streets</a> website.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.cycle.find_cent">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">find_cent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.cycle.find_cent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find centroid tazce codes</p>
+<p>If the  <a class="reference internal" href="#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-func docutils literal notranslate"><span class="pre">routes()</span></code></a> function is not able to find a route
+between two locations it returns a “Point” geometry. This function can be
+used to find these points and writes the tazce codes of the origin and
+destination to screen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>orig</strong> (<em>str</em><em>, </em><em>defaults to &quot;orig_taz&quot;</em>) – Column name that contains origin tazce codes.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em>, </em><em>defaults to &quot;dest_taz&quot;</em>) – Column name that contains destination tazce codes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely</span> <span class="kn">import</span> <span class="n">wkt</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">cycle</span>
+
+<span class="c1"># Define two origin-destination lines</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;orig_taz&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;73906&quot;</span><span class="p">,</span> <span class="s2">&quot;00106&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;dest_taz&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;00120&quot;</span><span class="p">,</span> <span class="s2">&quot;04120&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;LINESTRING(-91785727.431 4453819.337, -11782276.436 4448452.023)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)&quot;</span><span class="p">]})</span>
+
+<span class="c1"># Convert to WTK</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+<span class="c1"># Create GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:6933&quot;</span><span class="p">)</span>
+
+<span class="c1"># Read the Cycle Streets API key</span>
+<span class="n">cyclestreets_key</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">read_key</span><span class="p">()</span>
+
+<span class="c1"># Compute routes</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">routes</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">cyclestreets_key</span><span class="p">)</span>
+<span class="n">gdf</span><span class="o">.</span><span class="n">find_cent</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.cycle.read_key">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">read_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cyclestreets_key.txt'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.cycle.read_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a Cycle Streets API key from a file.</p>
