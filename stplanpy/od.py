@@ -12,7 +12,8 @@ from shapely.geometry import LineString
 from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
-def od_lines(fd: gpd.GeoDataFrame, centroids: gpd.GeoDataFrame, orig="orig_taz", dest="dest_taz") -> gpd.GeoDataFrame:
+def od_lines(fd: gpd.GeoDataFrame, centroids: gpd.GeoDataFrame, orig="orig_taz",
+        dest="dest_taz") -> gpd.GeoSeries:
     r"""
     Compute origin-destination lines
 
@@ -105,7 +106,7 @@ def od_lines(fd: gpd.GeoDataFrame, centroids: gpd.GeoDataFrame, orig="orig_taz",
     return gpd.GeoSeries(fd[[orig, dest]].apply(lambda x: lines(*x), axis=1), crs=fd.crs)
 
 @pf.register_dataframe_method
-def distances(fd: gpd.GeoDataFrame, geom="geometry") -> gpd.GeoDataFrame:
+def distances(fd: gpd.GeoDataFrame, geom="geometry") -> pd.Series:
     r"""
     Compute distance along origin-destination lines or routes
 
@@ -161,9 +162,103 @@ def distances(fd: gpd.GeoDataFrame, geom="geometry") -> gpd.GeoDataFrame:
     return fd[geom].apply(lambda x: f(x))  
 
 @pf.register_dataframe_method
-def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz", 
-        dest="dest_taz", dist="distance") -> pd.DataFrame:
+def gradient(fd: gpd.GeoDataFrame, elevation: gpd.GeoDataFrame, orig="orig_taz",
+        dest="dest_taz", dist_name="distance") -> pd.Series:
+    r"""
+    Compute the gradient along an origin-destination line or route
+
+    This function computes the gradient, :math:`\nabla = h/d`, along an
+    origin-destination line or route. :math:`d` is the distance and :math:`h` is
+    the elevation change.
     
+    Parameters
+    ----------
+    elevation : geopandas.GeoDataFrame
+        GeoDataFrame with elevation information for all the begin and end points
+        of the origin-destination lines or routes in the `fd` GeoDataFrame.
+    orig : str, defaults to "orig_taz"
+        Column name in the `fd` GeoDataFrame containing all origin codes.
+    dest : str, defaults to "dest_taz"
+        Column name in the `fd` GeoDataFrame containing all destination codes.
+    dist_name : str, defaults to "distance"
+        Column name in the `fd` GeoDataFrame containing distance information
+    
+    Returns
+    -------
+    pandas.Series
+        Series with gradients
+    
+    See Also
+    --------
+    ~stplanpy.od.od_lines
+    ~stplanpy.cycle.routes
+    ~stplanpy.od.distances
+    ~stplanpy.srtm.elev
+    
+    Examples
+    --------
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_",
+    "`tl_2020_06_place.zip`_", and "`srtm_12_05.zip`_" can be downloaded from
+    github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import geo
+        from stplanpy import od
+        from stplanpy import srtm
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # San Francisco Bay Area counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Place code East Palo Alto
+        places = ["20956"]
+
+        # Read place data
+        place = geo.read_shp("tl_2020_06_place.zip")
+
+        # Keep only East Palo Alto
+        place = place[place["placefp"].isin(places)]
+
+        # Read taz data
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Compute centroids
+        taz_cent = taz.cent()
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+        # Compute elevations
+        taz_cent = taz_cent.elev("srtm_12_05.zip")
+
+        # Add county and place codes to data frame.
+        flow_data = flow_data.orig_dest(taz)
+
+        # Compute origin-destination lines
+        flow_data["geometry"] = flow_data.od_lines(taz_cent)
+
+        # Compute distances
+        flow_data["distance"] = flow_data.distances()
+
+        # Compute gradients
+        flow_data["gradient"] = flow_data.gradient(taz_cent)
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
+    .. _srtm_12_05.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/srtm_12_05.zip
+    """    
     def grad(*x):
         if (x[2] == 0):
             return 0.0
@@ -172,10 +267,11 @@ def gradient(fd: pd.DataFrame, elevation: pd.DataFrame, orig="orig_taz",
             p1 = elevation.loc[elevation["tazce"] == x[1], "elevation"].iloc[0]
             return np.absolute((p1 - p0) / x[2])
     
-    return fd[[orig, dest, dist]].apply(lambda x: grad(*x), axis=1)
+    return fd[[orig, dest, dist_name]].apply(lambda x: grad(*x), axis=1)
 
 @pf.register_dataframe_method
-def orig_dest(fd: gpd.GeoDataFrame, taz: gpd.GeoDataFrame, taz_name="tazce", plc_name="placefp", cnt_name="countyfp") -> gpd.GeoDataFrame:
+def orig_dest(fd: gpd.GeoDataFrame, taz: gpd.GeoDataFrame, taz_name="tazce",
+        plc_name="placefp", cnt_name="countyfp") -> gpd.GeoDataFrame:
     r"""
     Add County and Place codes to origin-destination data           
 
