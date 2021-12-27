@@ -138,9 +138,8 @@ of the origin-destination lines or routes in the <cite>fd</cite> GeoDataFrame.</
 <p><a class="reference internal" href="#stplanpy.od.od_lines" title="stplanpy.od.od_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_lines</span></code></a>, <a class="reference internal" href="stplanpy.cycle.html#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a>, <a class="reference internal" href="#stplanpy.od.distances" title="stplanpy.od.distances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distances</span></code></a>, <a class="reference internal" href="stplanpy.srtm.html#stplanpy.srtm.elev" title="stplanpy.srtm.elev"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elev</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”,
-“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, and “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/srtm_12_05.zip">srtm_12_05.zip</a>” can be downloaded from
-github.</p>
+<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, and
+“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/srtm_12_05.zip">srtm_12_05.zip</a>” can be downloaded from github.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
 <span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
 <span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
@@ -152,15 +151,6 @@ github.</p>
 
 <span class="c1"># San Francisco Bay Area counties</span>
 <span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
-
-<span class="c1"># Place code East Palo Alto</span>
-<span class="n">places</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;20956&quot;</span><span class="p">]</span>
-
-<span class="c1"># Read place data</span>
-<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
-
-<span class="c1"># Keep only East Palo Alto</span>
-<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">places</span><span class="p">)]</span>
 
 <span class="c1"># Read taz data</span>
 <span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
@@ -174,14 +164,8 @@ github.</p>
 <span class="c1"># Compute centroids</span>
 <span class="n">taz_cent</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">cent</span><span class="p">()</span>
 
-<span class="c1"># Compute which taz lay inside a place and which part</span>
-<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
-
 <span class="c1"># Compute elevations</span>
 <span class="n">taz_cent</span> <span class="o">=</span> <span class="n">taz_cent</span><span class="o">.</span><span class="n">elev</span><span class="p">(</span><span class="s2">&quot;srtm_12_05.zip&quot;</span><span class="p">)</span>
-
-<span class="c1"># Add county and place codes to data frame.</span>
-<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
 
 <span class="c1"># Compute origin-destination lines</span>
 <span class="n">flow_data</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">od_lines</span><span class="p">(</span><span class="n">taz_cent</span><span class="p">)</span>

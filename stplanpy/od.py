@@ -197,9 +197,8 @@ def gradient(fd: gpd.GeoDataFrame, elevation: gpd.GeoDataFrame, orig="orig_taz",
     
     Examples
     --------
-    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_",
-    "`tl_2020_06_place.zip`_", and "`srtm_12_05.zip`_" can be downloaded from
-    github.
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_", and
+    "`srtm_12_05.zip`_" can be downloaded from github.
 
     .. code-block:: python
 
@@ -215,15 +214,6 @@ def gradient(fd: gpd.GeoDataFrame, elevation: gpd.GeoDataFrame, orig="orig_taz",
         # San Francisco Bay Area counties
         counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
 
-        # Place code East Palo Alto
-        places = ["20956"]
-
-        # Read place data
-        place = geo.read_shp("tl_2020_06_place.zip")
-
-        # Keep only East Palo Alto
-        place = place[place["placefp"].isin(places)]
-
         # Read taz data
         taz = geo.read_shp("tl_2011_06_taz10.zip")
 
@@ -236,14 +226,8 @@ def gradient(fd: gpd.GeoDataFrame, elevation: gpd.GeoDataFrame, orig="orig_taz",
         # Compute centroids
         taz_cent = taz.cent()
 
-        # Compute which taz lay inside a place and which part
-        taz = taz.in_place(place)
-
         # Compute elevations
         taz_cent = taz_cent.elev("srtm_12_05.zip")
-
-        # Add county and place codes to data frame.
-        flow_data = flow_data.orig_dest(taz)
 
         # Compute origin-destination lines
         flow_data["geometry"] = flow_data.od_lines(taz_cent)
@@ -256,7 +240,6 @@ def gradient(fd: gpd.GeoDataFrame, elevation: gpd.GeoDataFrame, orig="orig_taz",
 
     .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
     .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
-    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     .. _srtm_12_05.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/srtm_12_05.zip
     """    
     def grad(*x):
