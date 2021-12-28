@@ -1,5 +1,5 @@
 r"""
-Route operations
+The functions in this module perform various operations on routes.
 """
 import warnings
 import pandas as pd
