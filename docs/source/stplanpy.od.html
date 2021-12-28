@@ -106,7 +106,69 @@ or routes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.frm">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">frm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.frm" title="Permalink to this definition">¶</a></dt>
-<dd><p>From</p>
+<dd><p>Select origin-destination flow data</p>
+<p>This function selects origin-destination flow data from a Traffic Analysis
+Zone (TAZ), Census Designated Place, or a County, designated by the <cite>code</cite>
+variable. The length of the <cite>code</cite> variable is used to determine whether it
+applies to a TAZ, Place, or County.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>code</strong> (<em>str</em>) – The code of Traffic Anaysis Zone (8 characters long), Census Designated
+Place (5 characters long), or County (3 characters long).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataFrame with origin-destination from data for selected code.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.od.to" title="stplanpy.od.to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code></a>, <a class="reference internal" href="#stplanpy.od.to_frm" title="stplanpy.od.to_frm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_frm</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, and
+“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Read origin-destination flow data</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+
+<span class="c1"># San Francisco Bay Area counties</span>
+<span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read taz data</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rename columns for consistency</span>
+<span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Filter on county codes</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
+
+<span class="c1"># Place code East Palo Alto</span>
+<span class="n">places</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;20956&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read place data</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Keep only East Palo Alto</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">places</span><span class="p">)]</span>
+
+<span class="c1"># Compute which taz lay inside a place and which part</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
+
+<span class="c1"># Add county and place codes to data frame.</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
+
+<span class="c1"># Select origin-destination data from East Palo Alto</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">frm</span><span class="p">(</span><span class="s2">&quot;20956&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -181,21 +243,33 @@ of the origin-destination lines or routes in the <cite>fd</cite> GeoDataFrame.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.mode_share">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">mode_share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike',</span> <span class="pre">'go_dutch']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.mode_share" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">mode_share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_frm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'to_from'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike',</span> <span class="pre">'go_dutch']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.mode_share" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute mode share</p>
-<p>Compute origin-destination lines for all origin-destination pairs in
-dataframe <cite>fd</cite>. The <cite>centroids</cite> dataframe contains the coordinates of all the
-origins and destinations.</p>
+<p>Compute the mode share for Traffic Analysis Zones (TAZ), Census Designated
+Places, or Counties. This function tries to determine itself whether the
+<cite>gdf</cite> GeoDataFrame contains TAZ, Place, or County data, but this behavior
+can be overruled by specifying the <cite>orig</cite>, <cite>dest</cite>, and <cite>code</cite> variables. By
+default the “bike” and “go_dutch” mode shares are computed, but other modes
+of transportation can be specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>centroids</strong> (<em>pd.DataFrame</em>) – </p></li>
-<li><p><strong>orig=&quot;orig_taz&quot;</strong> – </p></li>
-<li><p><strong>dest=&quot;dest_taz&quot;</strong> – </p></li>
+<li><p><strong>flow_data</strong> (<em>geopandas.GeoDataFrame</em>) – GeoDataFrame containing all the origin-destination data.</p></li>
+<li><p><strong>to_frm</strong> (<em>str</em><em>, </em><em>defaults to &quot;to_from&quot;</em>) – Indicates whether only trips to a location, from a location, or both
+should be considered. The value of <cite>to_frm</cite> should be either: “to”,
+“from”, or “to_from”. The default is “to_from”.</p></li>
+<li><p><strong>modes</strong> (<em>list of str</em><em>, </em><em>defaults to</em><em> [</em><em>&quot;bike&quot;</em><em>, </em><em>&quot;go_dutch&quot;</em><em>]</em>) – Default list of modes of transportation to compute the mode share for.
+Defaults to [“bike”, “go_dutch”].</p></li>
+<li><p><strong>orig</strong> (<em>str</em><em>, </em><em>defaults to None</em>) – Origin codes in <cite>gdf</cite> GeoDataFrame. Defaults to “orig_taz”, “orig_plc”,
+and “orig_cnt” for TAZ, Places, and Counties, respectively.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em>, </em><em>defaults to None</em>) – Destination codes in <cite>gdf</cite> GeoDataFrame. Defaults to “dest_taz”,
+“dest_plc”, and “dest_cnt” for TAZ, Places, and Counties, respectively.</p></li>
+<li><p><strong>code</strong> (<em>str</em><em>, </em><em>defaults to None</em>) – Codes in <cite>flow_data</cite> GeoDataFrame. Defaults to “tazce”, “placefp”, and
+“countyfp” for TAZ, Places, and Counties, respectively.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Cleaned up dataframe with origin destination data broken down by mode</p>
+<dd class="field-even"><p>DataFrame containing the mode share for each mode of transporation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -206,7 +280,47 @@ origins and destinations.</p>
 <p><a class="reference internal" href="stplanpy.acs.html#stplanpy.acs.read_acs" title="stplanpy.acs.read_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_acs</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<p>The example data file, , can be downloaded from github.</p>
+<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, and
+“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Read origin-destination flow data</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+
+<span class="c1"># San Francisco Bay Area counties</span>
+<span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read taz data</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rename columns for consistency</span>
+<span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Filter on county codes</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
+
+<span class="c1"># Place code East Palo Alto</span>
+<span class="n">places</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;20956&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read place data</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Keep only East Palo Alto</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">places</span><span class="p">)]</span>
+
+<span class="c1"># Compute which taz lay inside a place and which part</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
+
+<span class="c1"># Add county and place codes to data frame.</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
+
+<span class="c1"># Compute the mode share</span>
+<span class="n">place</span><span class="p">[[</span><span class="s2">&quot;bike&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">place</span><span class="o">.</span><span class="n">mode_share</span><span class="p">(</span><span class="n">flow_data</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bike&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -362,19 +476,180 @@ The column names are “orig_taz”, “dest_taz”, “orig_plc”, “dest_plc
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.rm_taz">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">rm_taz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.od.rm_taz" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove TAZ</p>
+<dd><p>Remove Traffic Analysis Zones from origin-destination data</p>
+<p>This function removes a Traffic Analysis Zone (TAZ) from the origin-destination
+GeoDataFrame <cite>fd</cite>. Occurences of TAZ <cite>code</cite> are removed both when occuring
+as the origin and the destination. The column names of the origin and
+destination data are <cite>orig</cite> and <cite>dest</cite>, and default to “orig_taz” and
+“dest_taz”, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<em>str</em>) – The code of Traffic Anaysis Zone.</p></li>
+<li><p><strong>orig</strong> (<em>str</em><em>, </em><em>defaults to &quot;orig_taz&quot;</em>) – Column name of the <cite>fd</cite> GeoDataFrame containing all origin codes.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em>, </em><em>defaults to &quot;dest_taz&quot;</em>) – Column name of the <cite>fd</cite> GeoDataFrame containing all destination codes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataFrame with TAZ <cite>code</cite> removed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="stplanpy.acs.html#stplanpy.acs.read_acs" title="stplanpy.acs.read_acs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_acs</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data file “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>” can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Read origin-destination flow data</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+
+<span class="c1"># Remove TAZ</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">rm_taz</span><span class="p">(</span><span class="s2">&quot;00103024&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.to">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.to" title="Permalink to this definition">¶</a></dt>
-<dd><p>To</p>
+<dd><p>Select origin-destination flow data</p>
+<p>This function selects origin-destination flow data to a Traffic Analysis
+Zone (TAZ), Census Designated Place, or a County, designated by the <cite>code</cite>
+variable. The length of the <cite>code</cite> variable is used to determine whether it
+applies to a TAZ, Place, or County.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>code</strong> (<em>str</em>) – The code of Traffic Anaysis Zone (8 characters long), Census Designated
+Place (5 characters long), or County (3 characters long).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataFrame with origin-destination from data for selected code.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.od.frm" title="stplanpy.od.frm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frm</span></code></a>, <a class="reference internal" href="#stplanpy.od.to_frm" title="stplanpy.od.to_frm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_frm</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, and
+“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Read origin-destination flow data</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+
+<span class="c1"># San Francisco Bay Area counties</span>
+<span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read taz data</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rename columns for consistency</span>
+<span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Filter on county codes</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
+
+<span class="c1"># Place code East Palo Alto</span>
+<span class="n">places</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;20956&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read place data</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Keep only East Palo Alto</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">places</span><span class="p">)]</span>
+
+<span class="c1"># Compute which taz lay inside a place and which part</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
+
+<span class="c1"># Add county and place codes to data frame.</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
+
+<span class="c1"># Select origin-destination data to East Palo Alto</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;20956&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.to_frm">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">to_frm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.to_frm" title="Permalink to this definition">¶</a></dt>
-<dd><p>To from</p>
+<dd><p>Select origin-destination flow data</p>
+<p>This function selects origin-destination flow data to and from a Traffic
+Analysis Zone (TAZ), Census Designated Place, or a County, designated by the
+<cite>code</cite> variable. The length of the <cite>code</cite> variable is used to determine
+whether it applies to a TAZ, Place, or County.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>code</strong> (<em>str</em>) – The code of Traffic Anaysis Zone (8 characters long), Census Designated
+Place (5 characters long), or County (3 characters long).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataFrame with origin-destination from data for selected code.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.od.to" title="stplanpy.od.to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code></a>, <a class="reference internal" href="#stplanpy.od.frm" title="stplanpy.od.frm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frm</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>The example data files: “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv">od_data.csv</a>”, “<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip">tl_2011_06_taz10.zip</a>”, and
+“<a class="reference external" href="https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip">tl_2020_06_place.zip</a>”, can be downloaded from github.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">acs</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">geo</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">od</span>
+
+<span class="c1"># Read origin-destination flow data</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">read_acs</span><span class="p">(</span><span class="s2">&quot;od_data.csv&quot;</span><span class="p">)</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">clean_acs</span><span class="p">()</span>
+
+<span class="c1"># San Francisco Bay Area counties</span>
+<span class="n">counties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;013&quot;</span><span class="p">,</span> <span class="s2">&quot;041&quot;</span><span class="p">,</span> <span class="s2">&quot;055&quot;</span><span class="p">,</span> <span class="s2">&quot;075&quot;</span><span class="p">,</span> <span class="s2">&quot;081&quot;</span><span class="p">,</span> <span class="s2">&quot;085&quot;</span><span class="p">,</span> <span class="s2">&quot;095&quot;</span><span class="p">,</span> <span class="s2">&quot;097&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read taz data</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2011_06_taz10.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Rename columns for consistency</span>
+<span class="n">taz</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;countyfp10&quot;</span><span class="p">:</span><span class="s2">&quot;countyfp&quot;</span><span class="p">,</span> <span class="s2">&quot;tazce10&quot;</span><span class="p">:</span><span class="s2">&quot;tazce&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Filter on county codes</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="p">[</span><span class="n">taz</span><span class="p">[</span><span class="s2">&quot;countyfp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">counties</span><span class="p">)]</span>
+
+<span class="c1"># Place code East Palo Alto</span>
+<span class="n">places</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;20956&quot;</span><span class="p">]</span>
+
+<span class="c1"># Read place data</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">read_shp</span><span class="p">(</span><span class="s2">&quot;tl_2020_06_place.zip&quot;</span><span class="p">)</span>
+
+<span class="c1"># Keep only East Palo Alto</span>
+<span class="n">place</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="n">place</span><span class="p">[</span><span class="s2">&quot;placefp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">places</span><span class="p">)]</span>
+
+<span class="c1"># Compute which taz lay inside a place and which part</span>
+<span class="n">taz</span> <span class="o">=</span> <span class="n">taz</span><span class="o">.</span><span class="n">in_place</span><span class="p">(</span><span class="n">place</span><span class="p">)</span>
+
+<span class="c1"># Add county and place codes to data frame.</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
+
+<span class="c1"># Select origin-destination data to and from East Palo Alto</span>
+<span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">to_frm</span><span class="p">(</span><span class="s2">&quot;20956&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

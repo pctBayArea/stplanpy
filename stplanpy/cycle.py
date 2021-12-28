@@ -96,7 +96,7 @@ def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
         gdf["geometry"] = gdf.routes(api_key=cyclestreets_key)
     """
     if (api_key == None):
-        raise AttributeError("Please provide an API key")
+        raise Exception("Please provide an API key")
 
 # Ignore shapely warning while using version 1.8
     warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)

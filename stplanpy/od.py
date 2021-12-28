@@ -370,32 +370,97 @@ def orig_dest(fd: gpd.GeoDataFrame, taz: gpd.GeoDataFrame, taz_name="tazce",
     return fd
 
 @pf.register_dataframe_method
-def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame, modes=["bike", "go_dutch"], orig=None, dest=None, code=None) -> pd.DataFrame:
+def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame,
+    to_frm="to_from", modes=["bike", "go_dutch"], orig=None, dest=None,
+    code=None) -> pd.DataFrame:
     r"""
     Compute mode share
 
-    Compute origin-destination lines for all origin-destination pairs in
-    dataframe `fd`. The `centroids` dataframe contains the coordinates of all the
-    origins and destinations.
+    Compute the mode share for Traffic Analysis Zones (TAZ), Census Designated
+    Places, or Counties. This function tries to determine itself whether the
+    `gdf` GeoDataFrame contains TAZ, Place, or County data, but this behavior
+    can be overruled by specifying the `orig`, `dest`, and `code` variables. By
+    default the "bike" and "go_dutch" mode shares are computed, but other modes
+    of transportation can be specified.
     
     Parameters
     ----------
-    centroids: pd.DataFrame
-    orig="orig_taz"
-    dest="dest_taz"
+    flow_data : geopandas.GeoDataFrame
+        GeoDataFrame containing all the origin-destination data.
+    to_frm : str, defaults to "to_from"
+        Indicates whether only trips to a location, from a location, or both
+        should be considered. The value of `to_frm` should be either: "to",
+        "from", or "to_from". The default is "to_from".
+    modes : list of str, defaults to ["bike", "go_dutch"]
+        Default list of modes of transportation to compute the mode share for.
+        Defaults to ["bike", "go_dutch"].
+    orig : str, defaults to None
+        Origin codes in `gdf` GeoDataFrame. Defaults to "orig_taz", "orig_plc",
+        and "orig_cnt" for TAZ, Places, and Counties, respectively.
+    dest : str, defaults to None
+        Destination codes in `gdf` GeoDataFrame. Defaults to "dest_taz",
+        "dest_plc", and "dest_cnt" for TAZ, Places, and Counties, respectively.
+    code : str, defaults to None
+        Codes in `flow_data` GeoDataFrame. Defaults to "tazce", "placefp", and
+        "countyfp" for TAZ, Places, and Counties, respectively.
     
     Returns
     -------
     pandas.DataFrame
-        Cleaned up dataframe with origin destination data broken down by mode
+        DataFrame containing the mode share for each mode of transporation.
     
     See Also
     --------
     ~stplanpy.acs.read_acs
-    
+
     Examples
     --------
-    The example data file, , can be downloaded from github.
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_", and
+    "`tl_2020_06_place.zip`_", can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import geo
+        from stplanpy import od
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # San Francisco Bay Area counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Read taz data
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Place code East Palo Alto
+        places = ["20956"]
+
+        # Read place data
+        place = geo.read_shp("tl_2020_06_place.zip")
+
+        # Keep only East Palo Alto
+        place = place[place["placefp"].isin(places)]
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+        # Add county and place codes to data frame.
+        flow_data = flow_data.orig_dest(taz)
+
+        # Compute the mode share
+        place[["bike", "all"]] = place.mode_share(flow_data, modes=["bike"])
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     """
 # Set origin, destination, and code column names    
     if (orig is None) and (dest is None) and (code is None):
@@ -428,9 +493,15 @@ def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame, modes=["bike"
  # * trips that start at location and end elsewhere
     
     for index, row in df.iterrows():
-#        print(row[code])
-        fd = flow_data.loc[(flow_data[orig] == row[code]) | (flow_data[dest] == row[code])]
-#        print(fd)
+        if (to_frm == "from"):
+            fd = flow_data.loc[flow_data[orig] == row[code]]
+        elif (to_frm == "to"):
+            fd = flow_data.loc[flow_data[dest] == row[code]]
+        elif (to_frm == "to_from"):
+            fd = flow_data.loc[(flow_data[orig] == row[code]) | (flow_data[dest] == row[code])]
+        else:
+            raise Exception("Value of to_frm has to be \"to\", \"from\" or \"to_from\".")
+
         if not fd.empty:
             df.loc[df[code] == row[code], "all"] = fd["all"].sum()
             for mode in modes:
@@ -445,7 +516,77 @@ def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame, modes=["bike"
 @pf.register_dataframe_method
 def to(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
     r"""
-    To
+    Select origin-destination flow data
+
+    This function selects origin-destination flow data to a Traffic Analysis
+    Zone (TAZ), Census Designated Place, or a County, designated by the `code`
+    variable. The length of the `code` variable is used to determine whether it
+    applies to a TAZ, Place, or County.
+
+    Parameters
+    ----------
+    code : str
+        The code of Traffic Anaysis Zone (8 characters long), Census Designated
+        Place (5 characters long), or County (3 characters long).
+
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataFrame with origin-destination from data for selected code.
+
+    See Also
+    --------
+    ~stplanpy.od.frm
+    ~stplanpy.od.to_frm
+
+    Examples
+    --------
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_", and
+    "`tl_2020_06_place.zip`_", can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import geo
+        from stplanpy import od
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # San Francisco Bay Area counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Read taz data
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Place code East Palo Alto
+        places = ["20956"]
+
+        # Read place data
+        place = geo.read_shp("tl_2020_06_place.zip")
+
+        # Keep only East Palo Alto
+        place = place[place["placefp"].isin(places)]
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+        # Add county and place codes to data frame.
+        flow_data = flow_data.orig_dest(taz)
+
+        # Select origin-destination data to East Palo Alto
+        flow_data = flow_data.to("20956")
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     """
     length = len(code)
 
@@ -463,7 +604,78 @@ def to(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
 @pf.register_dataframe_method
 def frm(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
     r"""
-    From
+    Select origin-destination flow data
+
+    This function selects origin-destination flow data from a Traffic Analysis
+    Zone (TAZ), Census Designated Place, or a County, designated by the `code`
+    variable. The length of the `code` variable is used to determine whether it
+    applies to a TAZ, Place, or County.
+
+    Parameters
+    ----------
+    code : str
+        The code of Traffic Anaysis Zone (8 characters long), Census Designated
+        Place (5 characters long), or County (3 characters long).
+
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataFrame with origin-destination from data for selected code.
+
+    See Also
+    --------
+    ~stplanpy.od.to
+    ~stplanpy.od.to_frm
+
+    Examples
+    --------
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_", and
+    "`tl_2020_06_place.zip`_", can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import geo
+        from stplanpy import od
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # San Francisco Bay Area counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Read taz data
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Place code East Palo Alto
+        places = ["20956"]
+
+        # Read place data
+        place = geo.read_shp("tl_2020_06_place.zip")
+
+        # Keep only East Palo Alto
+        place = place[place["placefp"].isin(places)]
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+        # Add county and place codes to data frame.
+        flow_data = flow_data.orig_dest(taz)
+
+        # Select origin-destination data from East Palo Alto
+        flow_data = flow_data.frm("20956")
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
+
     """
     length = len(code)
 
@@ -481,7 +693,77 @@ def frm(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
 @pf.register_dataframe_method
 def to_frm(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
     r"""
-    To from
+    Select origin-destination flow data
+
+    This function selects origin-destination flow data to and from a Traffic
+    Analysis Zone (TAZ), Census Designated Place, or a County, designated by the
+    `code` variable. The length of the `code` variable is used to determine
+    whether it applies to a TAZ, Place, or County.
+
+    Parameters
+    ----------
+    code : str
+        The code of Traffic Anaysis Zone (8 characters long), Census Designated
+        Place (5 characters long), or County (3 characters long).
+
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataFrame with origin-destination from data for selected code.
+
+    See Also
+    --------
+    ~stplanpy.od.to
+    ~stplanpy.od.frm
+
+    Examples
+    --------
+    The example data files: "`od_data.csv`_", "`tl_2011_06_taz10.zip`_", and
+    "`tl_2020_06_place.zip`_", can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import geo
+        from stplanpy import od
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # San Francisco Bay Area counties
+        counties = ["001", "013", "041", "055", "075", "081", "085", "095", "097"]
+
+        # Read taz data
+        taz = geo.read_shp("tl_2011_06_taz10.zip")
+
+        # Rename columns for consistency
+        taz.rename(columns = {"countyfp10":"countyfp", "tazce10":"tazce"}, inplace = True)
+
+        # Filter on county codes
+        taz = taz[taz["countyfp"].isin(counties)]
+
+        # Place code East Palo Alto
+        places = ["20956"]
+
+        # Read place data
+        place = geo.read_shp("tl_2020_06_place.zip")
+
+        # Keep only East Palo Alto
+        place = place[place["placefp"].isin(places)]
+
+        # Compute which taz lay inside a place and which part
+        taz = taz.in_place(place)
+
+        # Add county and place codes to data frame.
+        flow_data = flow_data.orig_dest(taz)
+
+        # Select origin-destination data to and from East Palo Alto
+        flow_data = flow_data.to_frm("20956")
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
+    .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
+    .. _tl_2020_06_place.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2020_06_place.zip
     """
     length = len(code)
 
@@ -502,6 +784,48 @@ def to_frm(fd: gpd.GeoDataFrame, code) -> gpd.GeoDataFrame:
 @pf.register_dataframe_method
 def rm_taz(fd: gpd.GeoDataFrame, code, orig="orig_taz", dest="dest_taz"):
     r"""
-    Remove TAZ
+    Remove Traffic Analysis Zones from origin-destination data
+
+    This function removes a Traffic Analysis Zone (TAZ) from the origin-destination
+    GeoDataFrame `fd`. Occurences of TAZ `code` are removed both when occuring
+    as the origin and the destination. The column names of the origin and
+    destination data are `orig` and `dest`, and default to "orig_taz" and
+    "dest_taz", respectively.
+
+    Parameters
+    ----------
+    code : str
+        The code of Traffic Anaysis Zone.
+    orig : str, defaults to "orig_taz"
+        Column name of the `fd` GeoDataFrame containing all origin codes.
+    dest : str, defaults to "dest_taz"
+        Column name of the `fd` GeoDataFrame containing all destination codes.
+
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataFrame with TAZ `code` removed.
+
+    See Also
+    --------
+    ~stplanpy.acs.read_acs
+
+    Examples
+    --------
+    The example data file "`od_data.csv`_" can be downloaded from github.
+
+    .. code-block:: python
+
+        from stplanpy import acs
+        from stplanpy import od
+
+        # Read origin-destination flow data
+        flow_data = acs.read_acs("od_data.csv")
+        flow_data = flow_data.clean_acs()
+
+        # Remove TAZ
+        flow_data = flow_data.rm_taz("00103024")
+
+    .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
     """
     return fd.loc[(fd[orig] != code) & (fd[dest] != code)]
