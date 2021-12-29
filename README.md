@@ -13,7 +13,8 @@ Documentation for this package can be found on
 example of how to use the various functions in this package can be found in a
 [Jupyter Notebook](https://pctbayarea.github.io/stplanpy-book/).
 
-This library can be installed using pip:
+This library is also hosted on [PyPi](https://pypi.org/project/stplanpy/) and
+can be installed using pip:
 
 `pip install stplanpy`
 
