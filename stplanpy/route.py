@@ -12,9 +12,57 @@ from shapely.geometry import MultiLineString
 from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
-def directness(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
+def directness(fd: gpd.GeoDataFrame, geom="geometry") -> pd.Series:
     r"""
-    Compute directness of a route
+    Compute the directness of a route
+
+    This function computes the directness of the routes in GeoDataFrame `fd`.
+    Directness is defined as the distance along a route divided by the distance
+    as the crow flies. `geom` is the column name that contains the routes and
+    defaults to "geometry".
+
+    Parameters
+    ----------
+    geom : str, defaults to "geometry"
+        Name of the column containing the routes.
+
+    Returns
+    -------
+    pandas.Series
+        Series with directness values.
+
+    See Also
+    --------
+    ~stplanpy.cycle.routes
+
+    Examples
+    --------
+    .. code-block:: python
+
+        import pandas as pd
+        import geopandas as gpd
+        from shapely import wkt
+        from stplanpy import route
+
+        # Create DataFrames
+        df = pd.DataFrame(
+            {"all": [4, 3, 2, 5],
+            "bike": [2, 0, 1, 3],
+            "go_dutch": [3, 5, 0, 4],
+            "geometry": ["LINESTRING(1 0,0 0,1 1,2 1,3 0)",
+            "LINESTRING(0 2,1 1,2 1,3 2,2 2)",
+            "LINESTRING(1 0,1 1,2 1,2 0)",
+            "LINESTRING(1 2,1 1,2 1,2 2,3 2)"]})
+
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry')
+
+        # Compute directness
+        gdf["directness"] = gdf.directness()
+
     """    
     def direct(x):
 # Compute distance along route
@@ -39,7 +87,57 @@ def directness(fd: pd.DataFrame, geom="geometry") -> pd.DataFrame:
 @pf.register_dataframe_method
 def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -> gpd.GeoDataFrame:
     r"""
-    Reduce flow_data to a network
+    Reduce route data to a network
+
+    This function reduces route data in GeoDataFrame `fd` to a network for the
+    modes of transporation listed in `modes`. The column name `geom` contains
+    the routes and defaults to "geometry". All line segments of routes that
+    overlap are reduced to one segment and their mode numbers are summed up.
+
+    Parameters
+    ----------
+    geom : str, defaults to "geometry"
+        Name of the column containing the routes.
+    modes : list of str, defaults to ["bike", "go_dutch"]
+        List of modes of transportation that the network is computed for.
+        Defaults to ["bike", "go_dutch"].
+
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataFrame containing the network.
+
+    See Also
+    --------
+    ~stplanpy.cycle.routes
+
+    Examples
+    --------
+    .. code-block:: python
+
+        mport pandas as pd
+        port geopandas as gpd
+        om shapely import wkt
+        om stplanpy import route
+
+        Create DataFrames
+        df = pd.DataFrame(
+            {"all": [4, 3, 2, 5],
+            "bike": [2, 0, 1, 3],
+            "go_dutch": [3, 5, 0, 4],
+            "geometry": ["LINESTRING(1 0,0 0,1 1,2 1,3 0)",
+            "LINESTRING(0 2,1 1,2 1,3 2,2 2)",
+            "LINESTRING(1 0,1 1,2 1,2 0)",
+            "LINESTRING(1 2,1 1,2 1,2 2,3 2)"]})
+
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry')
+
+        # Compute the network
+        network = gdf.network()
     """
 # Ignore shapely warning while using version 1.8
     warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)

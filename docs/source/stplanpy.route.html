@@ -52,17 +52,111 @@
             
   <div class="section" id="module-stplanpy.route">
 <span id="stplanpy-route-module"></span><h1>stplanpy.route module<a class="headerlink" href="#module-stplanpy.route" title="Permalink to this headline">¶</a></h1>
-<p>Route operations</p>
+<p>The functions in this module perform various operations on routes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.route.directness">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">directness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.route.directness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute directness of a route</p>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">directness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="headerlink" href="#stplanpy.route.directness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the directness of a route</p>
+<p>This function computes the directness of the routes in GeoDataFrame <cite>fd</cite>.
+Directness is defined as the distance along a route divided by the distance
+as the crow flies. <cite>geom</cite> is the column name that contains the routes and
+defaults to “geometry”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column containing the routes.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series with directness values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="stplanpy.cycle.html#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely</span> <span class="kn">import</span> <span class="n">wkt</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">route</span>
+
+<span class="c1"># Create DataFrames</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+    <span class="s2">&quot;bike&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="s2">&quot;go_dutch&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;LINESTRING(1 0,0 0,1 1,2 1,3 0)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(0 2,1 1,2 1,3 2,2 2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(1 0,1 1,2 1,2 0)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(1 2,1 1,2 1,2 2,3 2)&quot;</span><span class="p">]})</span>
+
+<span class="c1"># Convert to WTK</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+<span class="c1"># Create GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute directness</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;directness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">directness</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.route.network">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike',</span> <span class="pre">'go_dutch']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.route.network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reduce flow_data to a network</p>
+<dd><p>Reduce route data to a network</p>
+<p>This function reduces route data in GeoDataFrame <cite>fd</cite> to a network for the
+modes of transporation listed in <cite>modes</cite>. The column name <cite>geom</cite> contains
+the routes and defaults to “geometry”. All line segments of routes that
+overlap are reduced to one segment and their mode numbers are summed up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column containing the routes.</p></li>
+<li><p><strong>modes</strong> (<em>list of str</em><em>, </em><em>defaults to</em><em> [</em><em>&quot;bike&quot;</em><em>, </em><em>&quot;go_dutch&quot;</em><em>]</em>) – List of modes of transportation that the network is computed for.
+Defaults to [“bike”, “go_dutch”].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GeoDataFrame containing the network.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="stplanpy.cycle.html#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mport</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="n">port</span> <span class="n">geopandas</span> <span class="k">as</span> <span class="n">gpd</span>
+<span class="n">om</span> <span class="n">shapely</span> <span class="kn">import</span> <span class="nn">wkt</span>
+<span class="n">om</span> <span class="n">stplanpy</span> <span class="kn">import</span> <span class="nn">route</span>
+
+<span class="n">Create</span> <span class="n">DataFrames</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+    <span class="s2">&quot;bike&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="s2">&quot;go_dutch&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;LINESTRING(1 0,0 0,1 1,2 1,3 0)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(0 2,1 1,2 1,3 2,2 2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(1 0,1 1,2 1,2 0)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(1 2,1 1,2 1,2 2,3 2)&quot;</span><span class="p">]})</span>
+
+<span class="c1"># Convert to WTK</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+<span class="c1"># Create GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute the network</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">network</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
