@@ -243,14 +243,14 @@ of the origin-destination lines or routes in the <cite>fd</cite> GeoDataFrame.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.od.mode_share">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">mode_share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_frm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'to_from'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike',</span> <span class="pre">'go_dutch']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.mode_share" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.od.</span></span><span class="sig-name descname"><span class="pre">mode_share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_frm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'to_from'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#stplanpy.od.mode_share" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute mode share</p>
 <p>Compute the mode share for Traffic Analysis Zones (TAZ), Census Designated
 Places, or Counties. This function tries to determine itself whether the
 <cite>gdf</cite> GeoDataFrame contains TAZ, Place, or County data, but this behavior
 can be overruled by specifying the <cite>orig</cite>, <cite>dest</cite>, and <cite>code</cite> variables. By
-default the “bike” and “go_dutch” mode shares are computed, but other modes
-of transportation can be specified.</p>
+default the “bike” mode shares is computed, but other modes of
+transportation can be specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -258,8 +258,8 @@ of transportation can be specified.</p>
 <li><p><strong>to_frm</strong> (<em>str</em><em>, </em><em>defaults to &quot;to_from&quot;</em>) – Indicates whether only trips to a location, from a location, or both
 should be considered. The value of <cite>to_frm</cite> should be either: “to”,
 “from”, or “to_from”. The default is “to_from”.</p></li>
-<li><p><strong>modes</strong> (<em>list of str</em><em>, </em><em>defaults to</em><em> [</em><em>&quot;bike&quot;</em><em>, </em><em>&quot;go_dutch&quot;</em><em>]</em>) – Default list of modes of transportation to compute the mode share for.
-Defaults to [“bike”, “go_dutch”].</p></li>
+<li><p><strong>modes</strong> (<em>list of str</em><em>, </em><em>defaults to</em><em> [</em><em>&quot;bike&quot;</em><em>]</em>) – Default list of modes of transportation to compute the mode share for.
+Defaults to [“bike”].</p></li>
 <li><p><strong>orig</strong> (<em>str</em><em>, </em><em>defaults to None</em>) – Origin codes in <cite>gdf</cite> GeoDataFrame. Defaults to “orig_taz”, “orig_plc”,
 and “orig_cnt” for TAZ, Places, and Counties, respectively.</p></li>
 <li><p><strong>dest</strong> (<em>str</em><em>, </em><em>defaults to None</em>) – Destination codes in <cite>gdf</cite> GeoDataFrame. Defaults to “dest_taz”,
@@ -318,7 +318,7 @@ and “orig_cnt” for TAZ, Places, and Counties, respectively.</p></li>
 <span class="n">flow_data</span> <span class="o">=</span> <span class="n">flow_data</span><span class="o">.</span><span class="n">orig_dest</span><span class="p">(</span><span class="n">taz</span><span class="p">)</span>
 
 <span class="c1"># Compute the mode share</span>
-<span class="n">place</span><span class="p">[[</span><span class="s2">&quot;bike&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">place</span><span class="o">.</span><span class="n">mode_share</span><span class="p">(</span><span class="n">flow_data</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bike&quot;</span><span class="p">])</span>
+<span class="n">place</span><span class="p">[[</span><span class="s2">&quot;bike&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">place</span><span class="o">.</span><span class="n">mode_share</span><span class="p">(</span><span class="n">flow_data</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

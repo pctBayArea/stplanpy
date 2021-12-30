@@ -106,7 +106,7 @@ defaults to “geometry”.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.route.network">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike',</span> <span class="pre">'go_dutch']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.route.network" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.route.network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reduce route data to a network</p>
 <p>This function reduces route data in GeoDataFrame <cite>fd</cite> to a network for the
 modes of transporation listed in <cite>modes</cite>. The column name <cite>geom</cite> contains
@@ -116,8 +116,8 @@ overlap are reduced to one segment and their mode numbers are summed up.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column containing the routes.</p></li>
-<li><p><strong>modes</strong> (<em>list of str</em><em>, </em><em>defaults to</em><em> [</em><em>&quot;bike&quot;</em><em>, </em><em>&quot;go_dutch&quot;</em><em>]</em>) – List of modes of transportation that the network is computed for.
-Defaults to [“bike”, “go_dutch”].</p></li>
+<li><p><strong>modes</strong> (<em>list of str</em><em>, </em><em>defaults to</em><em> [</em><em>&quot;bike&quot;</em><em>]</em>) – List of modes of transportation that the network is computed for.
+Defaults to [“bike”].</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -154,7 +154,7 @@ Defaults to [“bike”, “go_dutch”].</p></li>
 <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">)</span>
 
 <span class="c1"># Compute the network</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">network</span><span class="p">()</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">modes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bike&quot;</span><span class="p">,</span> <span class="s2">&quot;go_dutch&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>

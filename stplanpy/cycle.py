@@ -21,7 +21,8 @@ from shapely.geometry import LineString
 from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
-def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced", speed=20) -> gpd.GeoSeries:
+def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
+    speed=20, expire=timedelta(days=180)) -> gpd.GeoSeries:
     r"""
     Compute cycling routes
 
@@ -58,6 +59,9 @@ def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
         The maximum speed at which you will ride. Defaults to 20 km/h. The three
         permitted speeds are 16, 20, and 24 km/h, which correspond roughly to
         10, 12, and 15 miles per hour.
+    expire : int, defaults to timedelta(days=180)
+        Time after which the cache expires. Options are: -1 to never expire, 0
+        to disable caching, or a number. Defaults to timedelta(days=180).
 
     Returns
     -------
@@ -123,7 +127,7 @@ def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
         url += "&itinerarypoints=%s" % itinerarypoints
 
 # Retrieve result
-        session = CachedSession('cyclestreets_cache', expire_after=timedelta(days=180))
+        session = CachedSession('cyclestreets_cache', expire_after=expire)
         retry = Retry(connect=3, backoff_factor=0.25)
         adapter = HTTPAdapter(max_retries=retry)
         session.mount('http://', adapter)
