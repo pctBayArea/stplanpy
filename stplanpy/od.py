@@ -371,7 +371,7 @@ def orig_dest(fd: gpd.GeoDataFrame, taz: gpd.GeoDataFrame, taz_name="tazce",
 
 @pf.register_dataframe_method
 def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame,
-    to_frm="to_from", modes=["bike", "go_dutch"], orig=None, dest=None,
+    to_frm="to_from", modes=["bike"], orig=None, dest=None, 
     code=None) -> pd.DataFrame:
     r"""
     Compute mode share
@@ -380,8 +380,8 @@ def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame,
     Places, or Counties. This function tries to determine itself whether the
     `gdf` GeoDataFrame contains TAZ, Place, or County data, but this behavior
     can be overruled by specifying the `orig`, `dest`, and `code` variables. By
-    default the "bike" and "go_dutch" mode shares are computed, but other modes
-    of transportation can be specified.
+    default the "bike" mode shares is computed, but other modes of
+    transportation can be specified.
     
     Parameters
     ----------
@@ -391,9 +391,9 @@ def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame,
         Indicates whether only trips to a location, from a location, or both
         should be considered. The value of `to_frm` should be either: "to",
         "from", or "to_from". The default is "to_from".
-    modes : list of str, defaults to ["bike", "go_dutch"]
+    modes : list of str, defaults to ["bike"]
         Default list of modes of transportation to compute the mode share for.
-        Defaults to ["bike", "go_dutch"].
+        Defaults to ["bike"].
     orig : str, defaults to None
         Origin codes in `gdf` GeoDataFrame. Defaults to "orig_taz", "orig_plc",
         and "orig_cnt" for TAZ, Places, and Counties, respectively.
@@ -456,7 +456,7 @@ def mode_share(gdf: gpd.GeoDataFrame, flow_data: gpd.GeoDataFrame,
         flow_data = flow_data.orig_dest(taz)
 
         # Compute the mode share
-        place[["bike", "all"]] = place.mode_share(flow_data, modes=["bike"])
+        place[["bike", "all"]] = place.mode_share(flow_data)
 
     .. _od_data.csv: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/od_data.csv
     .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
