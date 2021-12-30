@@ -85,7 +85,7 @@ def directness(fd: gpd.GeoDataFrame, geom="geometry") -> pd.Series:
     return fd[geom].apply(lambda x: direct(x))
 
 @pf.register_dataframe_method
-def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -> gpd.GeoDataFrame:
+def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike"]) -> gpd.GeoDataFrame:
     r"""
     Reduce route data to a network
 
@@ -98,9 +98,9 @@ def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -
     ----------
     geom : str, defaults to "geometry"
         Name of the column containing the routes.
-    modes : list of str, defaults to ["bike", "go_dutch"]
+    modes : list of str, defaults to ["bike"]
         List of modes of transportation that the network is computed for.
-        Defaults to ["bike", "go_dutch"].
+        Defaults to ["bike"].
 
     Returns
     -------
@@ -137,7 +137,7 @@ def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike", "go_dutch"]) -
         gdf = gpd.GeoDataFrame(df, geometry='geometry')
 
         # Compute the network
-        network = gdf.network()
+        network = gdf.network(modes=["bike", "go_dutch"])
     """
 # Ignore shapely warning while using version 1.8
     warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
