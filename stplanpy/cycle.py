@@ -21,8 +21,8 @@ from shapely.geometry import LineString
 from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
-def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
-    speed=20, expire=timedelta(days=180)) -> gpd.GeoSeries:
+def routes(fd: gpd.GeoDataFrame, api_key=None, plan="balanced", speed=20,
+    expire=timedelta(days=180)) -> gpd.GeoSeries:
     r"""
     Compute cycling routes
 
@@ -31,8 +31,6 @@ def routes(fd: gpd.GeoDataFrame, geom="geometry", api_key=None, plan="balanced",
     
     Parameters
     ----------
-    geom : str, defaults to "geometry"
-        Name of the column that stores the origin-destination lines
     api_key : str, defaults to None
         Your registered API key
     plan : str, defaults to "balanced"
@@ -154,7 +152,7 @@ The tazce codes of the centroids can be found with find_cent function in this \
 module.", Warning, stacklevel=2)
                 return Point(x0,y0)
 
-    return gpd.GeoSeries(fd[geom].to_crs("EPSG:4326").apply(lambda x: routes(x)), crs="EPSG:4326").to_crs(fd.crs)
+    return gpd.GeoSeries(fd[fd.geometry.name].to_crs("EPSG:4326").apply(lambda x: routes(x)), crs="EPSG:4326").to_crs(fd.crs)
 
 def read_key(key_file="cyclestreets_key.txt"):
     r"""

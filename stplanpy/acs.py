@@ -365,7 +365,7 @@ def clean_acs(fd: gpd.GeoDataFrame,
             "transit_error",
             "carpool",
             "carpool_error",
-            "geometry"]]
+            fd.geometry.name]]
     elif (reduced and not groups):
 # Columns to keep
         fd = fd[[
@@ -381,7 +381,7 @@ def clean_acs(fd: gpd.GeoDataFrame,
             "bike_error",
             "sov",
             "sov_error",
-            "geometry"]]
+            fd.geometry.name]]
 
     if not (error):
         fd = fd[fd.columns.drop(list(fd.filter(regex="_error")))]

@@ -12,19 +12,17 @@ from shapely.geometry import MultiLineString
 from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
-def directness(fd: gpd.GeoDataFrame, geom="geometry") -> pd.Series:
+def directness(fd: gpd.GeoDataFrame) -> pd.Series:
     r"""
     Compute the directness of a route
 
     This function computes the directness of the routes in GeoDataFrame `fd`.
     Directness is defined as the distance along a route divided by the distance
-    as the crow flies. `geom` is the column name that contains the routes and
-    defaults to "geometry".
+    as the crow flies.
 
     Parameters
     ----------
-    geom : str, defaults to "geometry"
-        Name of the column containing the routes.
+    None
 
     Returns
     -------
@@ -82,22 +80,19 @@ def directness(fd: gpd.GeoDataFrame, geom="geometry") -> pd.Series:
         else:
             return rt_dist/ln_dist
     
-    return fd[geom].apply(lambda x: direct(x))
+    return fd[fd.geometry.name].apply(lambda x: direct(x))
 
 @pf.register_dataframe_method
-def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike"]) -> gpd.GeoDataFrame:
+def network(fd: gpd.GeoDataFrame, modes=["bike"]) -> gpd.GeoDataFrame:
     r"""
     Reduce route data to a network
 
     This function reduces route data in GeoDataFrame `fd` to a network for the
-    modes of transporation listed in `modes`. The column name `geom` contains
-    the routes and defaults to "geometry". All line segments of routes that
+    modes of transporation listed in `modes`. All line segments of routes that
     overlap are reduced to one segment and their mode numbers are summed up.
 
     Parameters
     ----------
-    geom : str, defaults to "geometry"
-        Name of the column containing the routes.
     modes : list of str, defaults to ["bike"]
         List of modes of transportation that the network is computed for.
         Defaults to ["bike"].
@@ -144,7 +139,7 @@ def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike"]) -> gpd.GeoDat
 
 # Drop all columns except geom and modes
     mode = modes.copy()
-    mode.append(geom)
+    mode.append(fd.geometry.name)
     gdf = fd[mode]
 
     if (gdf.shape[0] >= 7000):
@@ -160,7 +155,7 @@ def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike"]) -> gpd.GeoDat
         return MultiLineString(list(map(LineString, zip(curve.coords[:-1], curve.coords[1:]))))
 
 # Break up routes into line segments
-    gdf["geometry"] = fd[geom].apply(lambda x: segments(x))
+    gdf["geometry"] = fd[fd.geometry.name].apply(lambda x: segments(x))
     gdf = gdf.explode(ignore_index=True)
 
     def reverse(line):

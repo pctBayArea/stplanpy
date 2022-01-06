@@ -106,18 +106,16 @@ def od_lines(fd: gpd.GeoDataFrame, centroids: gpd.GeoDataFrame, orig="orig_taz",
     return gpd.GeoSeries(fd[[orig, dest]].apply(lambda x: lines(*x), axis=1), crs=fd.crs)
 
 @pf.register_dataframe_method
-def distances(fd: gpd.GeoDataFrame, geom="geometry") -> pd.Series:
+def distances(fd: gpd.GeoDataFrame) -> pd.Series:
     r"""
     Compute distance along origin-destination lines or routes
 
     This function computes the distance along origin-destination (od) lines or routes
-    in the `fd` GeoDataFrame. `geom` is the name of column containing the od lines
-    or routes.
+    in the `fd` GeoDataFrame. 
     
     Parameters
     ----------
-    geom : str, defaults to "geometry"
-        Name of the column containing the origin-destination lines or routes.
+    None
     
     Returns
     -------
@@ -159,7 +157,7 @@ def distances(fd: gpd.GeoDataFrame, geom="geometry") -> pd.Series:
     def f(x):
         return x.length
     
-    return fd[geom].apply(lambda x: f(x))  
+    return fd[fd.geometry.name].apply(lambda x: f(x))  
 
 @pf.register_dataframe_method
 def gradient(fd: gpd.GeoDataFrame, elevation: gpd.GeoDataFrame, orig="orig_taz",
