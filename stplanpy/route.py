@@ -147,6 +147,9 @@ def network(fd: gpd.GeoDataFrame, geom="geometry", modes=["bike"]) -> gpd.GeoDat
     mode.append(geom)
     gdf = fd[mode]
 
+    if (gdf.shape[0] >= 7000):
+        gdf = gdf.head(7000)
+
 # Drop all columns where all modes are zero
     gdf = gdf.loc[gdf[modes].values.sum(axis=1) != 0]
 

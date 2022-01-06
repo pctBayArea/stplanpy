@@ -338,7 +338,8 @@ github. Read a shape file:</p>
 <span class="sig-prename descclassname"><span class="pre">stplanpy.geo.</span></span><span class="sig-name descname"><span class="pre">to_geojson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:4326'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.geo.to_geojson" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write GeoDataFrame to GeoJson file</p>
 <p>Write GeoDataFrame to a GeoJson file with the default coordinate reference
-system (crs) “EPSG:4326”.</p>
+system (crs) “EPSG:4326”. If a GeoDataFrame has multiple columns containing
+geometries, only the column <cite>GeoDataFrame.geometry.name</cite> is kept.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>crs</strong> (<em>str</em><em>, </em><em>defaults to &quot;EPSG:4326&quot;</em>) – The coordinate reference system (crs) of the output GeoJson file. The

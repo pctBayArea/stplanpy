@@ -109,7 +109,8 @@ def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
     Write GeoDataFrame to GeoJson file
 
     Write GeoDataFrame to a GeoJson file with the default coordinate reference
-    system (crs) "EPSG:4326".
+    system (crs) "EPSG:4326". If a GeoDataFrame has multiple columns containing
+    geometries, only the column `GeoDataFrame.geometry.name` is kept.
 
     Parameters
     ----------
@@ -141,7 +142,9 @@ def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
 
     .. _tl_2011_06_taz10.zip: https://raw.githubusercontent.com/pctBayArea/stplanpy/main/examples/tl_2011_06_taz10.zip
     """
-    gdf.to_crs(crs).to_file(file_name, driver="GeoJSON")
+    gdf.drop(gdf.loc[:, (gdf.dtypes == "geometry") & 
+        (gdf.columns != gdf.geometry.name)].columns, 
+        axis = 1).to_crs(crs).to_file(file_name, driver="GeoJSON")
 
     return None
 
