@@ -146,8 +146,6 @@ def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
         (gdf.columns != gdf.geometry.name)].columns, 
         axis = 1).to_crs(crs).to_file(file_name, driver="GeoJSON")
 
-    return None
-
 @pf.register_dataframe_method
 def in_county(plc: gpd.GeoDataFrame, cnt: gpd.GeoDataFrame, area_min=0.1) -> gpd.GeoDataFrame:
     r"""

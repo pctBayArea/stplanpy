@@ -18,6 +18,9 @@ can be installed using pip:
 
 `pip install stplanpy`
 
+An online interactive version of this code for the San Francisco Bay Area can be
+found on [heroku](https://pctbayarea.herokuapp.com/). 
+
 ## References
 
 [1] Robin Lovelace, Anna Goodman, Rachel Aldred, et al., "The Propensity

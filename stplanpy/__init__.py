@@ -8,7 +8,8 @@ Products Program (CTPP).
 
 The source code of this package can be found on `github`_ and an example of how
 to use the various functions in this package can be found in a Jupyter
-`Notebook`_.
+`Notebook`_. An online interective version of this code for the San Francisco
+Bay Area can be found on `heroku`_.
 
 References
 ----------
@@ -21,5 +22,6 @@ References
 .. _stplanr: https://docs.ropensci.org/stplanr/
 .. _github: https://github.com/pctBayArea/stplanpy 
 .. _Notebook: https://pctbayarea.github.io/stplanpy-book/
+.. _heroku: https://pctbayarea.herokuapp.com/
 .. _https://www.jstor.org/stable/26211742: https://www.jstor.org/stable/26211742
 """

@@ -5,6 +5,7 @@ import warnings
 import pandas as pd
 import geopandas as gpd
 import pandas_flavor as pf
+from more_itertools import sliced
 from shapely.ops import linemerge
 from shapely.geometry import Point
 from shapely.geometry import LineString
@@ -83,57 +84,8 @@ def directness(fd: gpd.GeoDataFrame) -> pd.Series:
     return fd[fd.geometry.name].apply(lambda x: direct(x))
 
 @pf.register_dataframe_method
-def network(fd: gpd.GeoDataFrame, modes=["bike"]) -> gpd.GeoDataFrame:
-    r"""
-    Reduce route data to a network
+def _networks(fd: gpd.GeoDataFrame, modes=["bike"]) -> gpd.GeoDataFrame:
 
-    This function reduces route data in GeoDataFrame `fd` to a network for the
-    modes of transporation listed in `modes`. All line segments of routes that
-    overlap are reduced to one segment and their mode numbers are summed up.
-
-    Parameters
-    ----------
-    modes : list of str, defaults to ["bike"]
-        List of modes of transportation that the network is computed for.
-        Defaults to ["bike"].
-
-    Returns
-    -------
-    geopandas.GeoDataFrame
-        GeoDataFrame containing the network.
-
-    See Also
-    --------
-    ~stplanpy.cycle.routes
-
-    Examples
-    --------
-    .. code-block:: python
-
-        mport pandas as pd
-        port geopandas as gpd
-        om shapely import wkt
-        om stplanpy import route
-
-        Create DataFrames
-        df = pd.DataFrame(
-            {"all": [4, 3, 2, 5],
-            "bike": [2, 0, 1, 3],
-            "go_dutch": [3, 5, 0, 4],
-            "geometry": ["LINESTRING(1 0,0 0,1 1,2 1,3 0)",
-            "LINESTRING(0 2,1 1,2 1,3 2,2 2)",
-            "LINESTRING(1 0,1 1,2 1,2 0)",
-            "LINESTRING(1 2,1 1,2 1,2 2,3 2)"]})
-
-        # Convert to WTK
-        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
-
-        # Create GeoDataFrame
-        gdf = gpd.GeoDataFrame(df, geometry='geometry')
-
-        # Compute the network
-        network = gdf.network(modes=["bike", "go_dutch"])
-    """
 # Ignore shapely warning while using version 1.8
     warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
@@ -141,9 +93,6 @@ def network(fd: gpd.GeoDataFrame, modes=["bike"]) -> gpd.GeoDataFrame:
     mode = modes.copy()
     mode.append(fd.geometry.name)
     gdf = fd[mode]
-
-    if (gdf.shape[0] >= 7000):
-        gdf = gdf.head(7000)
 
 # Drop all columns where all modes are zero
     gdf = gdf.loc[gdf[modes].values.sum(axis=1) != 0]
@@ -222,3 +171,80 @@ def network(fd: gpd.GeoDataFrame, modes=["bike"]) -> gpd.GeoDataFrame:
     gdf["geometry"] = gdf["geometry"].apply(lambda x: merge(x))
 
     return gdf
+
+@pf.register_dataframe_method
+def network(fd: gpd.GeoDataFrame, modes=["bike"], max_rows=1000) -> gpd.GeoDataFrame:
+    r"""
+    Reduce route data to a network
+
+    This function reduces route data in GeoDataFrame `fd` to a network for the
+    modes of transporation listed in `modes`. All line segments of routes that
+    overlap are reduced to one segment and their mode numbers are summed up.
+
+    Parameters
+    ----------
+    modes : list of str, defaults to ["bike"]
+        List of modes of transportation that the network is computed for.
+        Defaults to ["bike"].
+    max_rows : int, defaults to 4000
+        To reduce the memory footprint a GeoDataFrames is split up in blocks of
+        `max_rows` rows. This value can be increased on computers with enough
+        RAM.
+
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoDataFrame containing the network.
+
+    See Also
+    --------
+    ~stplanpy.cycle.routes
+
+    Examples
+    --------
+    .. code-block:: python
+
+        mport pandas as pd
+        port geopandas as gpd
+        om shapely import wkt
+        om stplanpy import route
+
+        Create DataFrames
+        df = pd.DataFrame(
+            {"all": [4, 3, 2, 5],
+            "bike": [2, 0, 1, 3],
+            "go_dutch": [3, 5, 0, 4],
+            "geometry": ["LINESTRING(1 0,0 0,1 1,2 1,3 0)",
+            "LINESTRING(0 2,1 1,2 1,3 2,2 2)",
+            "LINESTRING(1 0,1 1,2 1,2 0)",
+            "LINESTRING(1 2,1 1,2 1,2 2,3 2)"]})
+
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry')
+
+        # Compute the network
+        network = gdf.network(modes=["bike", "go_dutch"])
+    """
+    if (fd.shape[0] < max_rows):
+        return fd._networks(modes=modes)
+    else:
+# Compute maximum number of GeoDataFrames
+        max_frames = int(fd.shape[0]/max_rows)+1
+
+# Create empty list        
+        frames = []
+
+# Iterate over all GeoDataFrames      
+        for idx in range(max_frames):
+            idx0 =  idx   *max_rows 
+            idx1 = (idx+1)*max_rows-1
+            if (idx1 > fd.shape[0]):
+                idx1 = fd.shape[0]
+            
+            frames.append(fd.iloc[idx0:idx1]._networks(modes=modes))
+
+# Combine all GeoDataFrames
+        return pd.concat(frames, ignore_index=True).explode(ignore_index=True)._networks(modes=modes)

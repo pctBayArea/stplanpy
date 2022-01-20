@@ -5,6 +5,7 @@ Streets`_ website.
 .. _Cycle Streets: https://www.cyclestreets.net
 """
 import warnings
+import os
 import re
 import sys
 import json
@@ -22,7 +23,7 @@ from shapely.errors import ShapelyDeprecationWarning
 
 @pf.register_dataframe_method
 def routes(fd: gpd.GeoDataFrame, api_key=None, plan="balanced", speed=20,
-    expire=timedelta(days=180)) -> gpd.GeoSeries:
+    expire=-1) -> gpd.GeoSeries:
     r"""
     Compute cycling routes
 
@@ -57,9 +58,10 @@ def routes(fd: gpd.GeoDataFrame, api_key=None, plan="balanced", speed=20,
         The maximum speed at which you will ride. Defaults to 20 km/h. The three
         permitted speeds are 16, 20, and 24 km/h, which correspond roughly to
         10, 12, and 15 miles per hour.
-    expire : int, defaults to timedelta(days=180)
-        Time after which the cache expires. Options are: -1 to never expire, 0
-        to disable caching, or a number. Defaults to timedelta(days=180).
+    expire : int, defaults to -1
+        Time after which the cache expires in seconds. Options are: -1 to never
+        expire, 0 to disable caching, or a number. Days can be set using e.g.
+        timedelta(days=180). Defaults to -1.
 
     Returns
     -------
@@ -126,7 +128,7 @@ def routes(fd: gpd.GeoDataFrame, api_key=None, plan="balanced", speed=20,
 
 # Retrieve result
         session = CachedSession('cyclestreets_cache', expire_after=expire)
-        retry = Retry(connect=3, backoff_factor=0.25)
+        retry = Retry(connect=3, backoff_factor=0.5)
         adapter = HTTPAdapter(max_retries=retry)
         session.mount('http://', adapter)
         session.mount('https://', adapter)
@@ -196,7 +198,7 @@ def find_cent(fd: gpd.GeoDataFrame, orig="orig_taz", dest="dest_taz"):
     r"""
     Find centroid tazce codes
 
-    If the  :func:`~stplanpy.cycle.routes` function is not able to find a route
+    If the :func:`~stplanpy.cycle.routes` function is not able to find a route
     between two locations it returns a "Point" geometry. This function can be
     used to find these points and writes the tazce codes of the origin and
     destination to screen. 
@@ -253,5 +255,72 @@ def find_cent(fd: gpd.GeoDataFrame, orig="orig_taz", dest="dest_taz"):
 # Print the origin and destination tazce values
     if not fd.empty:
         print(fd[[orig, dest]])
-      
-    return None
+
+def expire_cache(expire=-1):
+    r"""
+    Set cache expiration time
+
+    This function can be used to modify the cache expiration time. This is
+    useful when one wants to update only part of the cache. The procedure would
+    be to set `expire` to 1 (second), call the :func:`~stplanpy.cycle.routes`
+    function for the routes that need to be updated, and call
+    :func:`~stplanpy.cycle.expire_cache` again to set expire back to -1 (never
+    expires).
+    
+    Parameters
+    ----------
+    expire : int, defaults to -1
+        Time after which the cache expires in seconds. Options are: -1 to never
+        expire, 0 to disable caching, or a number. Days can be set using e.g.
+        timedelta(days=180). Defaults to -1.
+
+    Returns
+    -------
+    None
+    
+    See Also
+    --------
+    ~stplanpy.cycle.routes
+    
+    Examples
+    --------
+    .. code-block:: python
+
+        import pandas as pd
+        import geopandas as gpd
+        from shapely import wkt
+        from stplanpy import cycle
+
+        # Define two origin-destination lines
+        df = pd.DataFrame(
+            {"geometry": [
+            "LINESTRING(-11785727.431 4453819.337, -11782276.436 4448452.023)", 
+            "LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)"]})
+
+        # Convert to WTK
+        df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+
+        # Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(df, geometry='geometry', crs="EPSG:6933")
+
+        # Read the Cycle Streets API key
+        cyclestreets_key = cycle.read_key()
+
+        # Compute routes for the 1st time
+        gdf["geometry"] = gdf.routes(api_key=cyclestreets_key)
+
+        # Set cache expiration
+        cycle.expire_cache(expire=1)
+
+        # Update cache for second route
+        gdf = gdf.copy().iloc[[1]]
+        gdf["geometry"] = gdf.routes(api_key=cyclestreets_key)
+
+        # Reset cache expiration
+        cycle.expire_cache()
+    """
+# Initialize cache and change expiration time
+    
+    os.environ["SQLITE_TMPDIR"] = "."
+    session = CachedSession("cyclestreets_cache")
+    session.remove_expired_responses(expire_after=expire)

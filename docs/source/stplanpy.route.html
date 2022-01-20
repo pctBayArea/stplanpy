@@ -55,15 +55,14 @@
 <p>The functions in this module perform various operations on routes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.route.directness">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">directness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="headerlink" href="#stplanpy.route.directness" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">directness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="headerlink" href="#stplanpy.route.directness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the directness of a route</p>
 <p>This function computes the directness of the routes in GeoDataFrame <cite>fd</cite>.
 Directness is defined as the distance along a route divided by the distance
-as the crow flies. <cite>geom</cite> is the column name that contains the routes and
-defaults to “geometry”.</p>
+as the crow flies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column containing the routes.</p>
+<dd class="field-odd"><p><strong>None</strong> – </p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Series with directness values.</p>
@@ -106,18 +105,19 @@ defaults to “geometry”.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.route.network">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.route.network" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.route.</span></span><span class="sig-name descname"><span class="pre">network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['bike']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></span><a class="headerlink" href="#stplanpy.route.network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reduce route data to a network</p>
 <p>This function reduces route data in GeoDataFrame <cite>fd</cite> to a network for the
-modes of transporation listed in <cite>modes</cite>. The column name <cite>geom</cite> contains
-the routes and defaults to “geometry”. All line segments of routes that
+modes of transporation listed in <cite>modes</cite>. All line segments of routes that
 overlap are reduced to one segment and their mode numbers are summed up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column containing the routes.</p></li>
 <li><p><strong>modes</strong> (<em>list of str</em><em>, </em><em>defaults to</em><em> [</em><em>&quot;bike&quot;</em><em>]</em>) – List of modes of transportation that the network is computed for.
 Defaults to [“bike”].</p></li>
+<li><p><strong>max_rows</strong> (<em>int</em><em>, </em><em>defaults to 4000</em>) – To reduce the memory footprint a GeoDataFrames is split up in blocks of
+<cite>max_rows</cite> rows. This value can be increased on computers with enough
+RAM.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

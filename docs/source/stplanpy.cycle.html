@@ -55,10 +55,74 @@
 <p>The functions in this module are used to retrieve cycling routes from the <a class="reference external" href="https://www.cyclestreets.net">Cycle
 Streets</a> website.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="stplanpy.cycle.expire_cache">
+<span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">expire_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expire</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.cycle.expire_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set cache expiration time</p>
+<p>This function can be used to modify the cache expiration time. This is
+useful when one wants to update only part of the cache. The procedure would
+be to set <cite>expire</cite> to 1 (second), call the <a class="reference internal" href="#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-func docutils literal notranslate"><span class="pre">routes()</span></code></a>
+function for the routes that need to be updated, and call
+<a class="reference internal" href="#stplanpy.cycle.expire_cache" title="stplanpy.cycle.expire_cache"><code class="xref py py-func docutils literal notranslate"><span class="pre">expire_cache()</span></code></a> again to set expire back to -1 (never
+expires).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>expire</strong> (<em>int</em><em>, </em><em>defaults to -1</em>) – Time after which the cache expires in seconds. Options are: -1 to never
+expire, 0 to disable caching, or a number. Days can be set using e.g.
+timedelta(days=180). Defaults to -1.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely</span> <span class="kn">import</span> <span class="n">wkt</span>
+<span class="kn">from</span> <span class="nn">stplanpy</span> <span class="kn">import</span> <span class="n">cycle</span>
+
+<span class="c1"># Define two origin-destination lines</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;LINESTRING(-11785727.431 4453819.337, -11782276.436 4448452.023)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LINESTRING(-11785787.392 4450797.573, -11787086.209 4449884.472)&quot;</span><span class="p">]})</span>
+
+<span class="c1"># Convert to WTK</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+<span class="c1"># Create GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:6933&quot;</span><span class="p">)</span>
+
+<span class="c1"># Read the Cycle Streets API key</span>
+<span class="n">cyclestreets_key</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">read_key</span><span class="p">()</span>
+
+<span class="c1"># Compute routes for the 1st time</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">routes</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">cyclestreets_key</span><span class="p">)</span>
+
+<span class="c1"># Set cache expiration</span>
+<span class="n">cycle</span><span class="o">.</span><span class="n">expire_cache</span><span class="p">(</span><span class="n">expire</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Update cache for second route</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">routes</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">cyclestreets_key</span><span class="p">)</span>
+
+<span class="c1"># Reset cache expiration</span>
+<span class="n">cycle</span><span class="o">.</span><span class="n">expire_cache</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.cycle.find_cent">
 <span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">find_cent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'orig_taz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dest_taz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stplanpy.cycle.find_cent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find centroid tazce codes</p>
-<p>If the  <a class="reference internal" href="#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-func docutils literal notranslate"><span class="pre">routes()</span></code></a> function is not able to find a route
+<p>If the <a class="reference internal" href="#stplanpy.cycle.routes" title="stplanpy.cycle.routes"><code class="xref py py-func docutils literal notranslate"><span class="pre">routes()</span></code></a> function is not able to find a route
 between two locations it returns a “Point” geometry. This function can be
 used to find these points and writes the tazce codes of the origin and
 destination to screen.</p>
@@ -142,14 +206,13 @@ name is “cyclestreets_key.txt” and the key should be stored in plain text.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stplanpy.cycle.routes">
-<span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expire</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.timedelta(days=180)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geoseries.GeoSeries</span></span></span><a class="headerlink" href="#stplanpy.cycle.routes" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">stplanpy.cycle.</span></span><span class="sig-name descname"><span class="pre">routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">geopandas.geodataframe.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expire</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.geoseries.GeoSeries</span></span></span><a class="headerlink" href="#stplanpy.cycle.routes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute cycling routes</p>
 <p>This function takes origin-destination lines and computes a cycling route
 between them using the Cycling Streets router.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>geom</strong> (<em>str</em><em>, </em><em>defaults to &quot;geometry&quot;</em>) – Name of the column that stores the origin-destination lines</p></li>
 <li><p><strong>api_key</strong> (<em>str</em><em>, </em><em>defaults to None</em>) – Your registered API key</p></li>
 <li><p><strong>plan</strong> (<em>str</em><em>, </em><em>defaults to &quot;balanced&quot;</em>) – <p>The type of route, which can be one of the values: balanced, fastest,
 quietest. There is also shortest but see the notes below.</p>
@@ -176,8 +239,9 @@ distance.</p></li>
 <li><p><strong>speed</strong> (<em>int</em><em>, </em><em>defaults to 20</em>) – The maximum speed at which you will ride. Defaults to 20 km/h. The three
 permitted speeds are 16, 20, and 24 km/h, which correspond roughly to
 10, 12, and 15 miles per hour.</p></li>
-<li><p><strong>expire</strong> (<em>int</em><em>, </em><em>defaults to timedelta</em><em>(</em><em>days=180</em><em>)</em>) – Time after which the cache expires. Options are: -1 to never expire, 0
-to disable caching, or a number. Defaults to timedelta(days=180).</p></li>
+<li><p><strong>expire</strong> (<em>int</em><em>, </em><em>defaults to -1</em>) – Time after which the cache expires in seconds. Options are: -1 to never
+expire, 0 to disable caching, or a number. Days can be set using e.g.
+timedelta(days=180). Defaults to -1.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

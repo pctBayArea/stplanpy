@@ -19,3 +19,4 @@ Submodules
    stplanpy.od
    stplanpy.route
    stplanpy.srtm
+   stplanpy.stats
