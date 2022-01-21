@@ -10,7 +10,7 @@ README = (current_dir / "README.md").read_text()
 
 setup(
     name = "stplanpy",
-    version = "0.2.0",
+    version = "0.3.0",
     author = "Arnout Boelens",
     author_email = "ampboelens@gmail.com",
     packages = ["stplanpy"],
