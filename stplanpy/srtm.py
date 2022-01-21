@@ -31,10 +31,6 @@ def reproj(file_name_in, file_name_out, crs="EPSG:6933"):
     crs : str, defaults to "EPSG:6933"
         The coordinate reference system (crs) of the output GeoTIFF file. 
  
-    Returns
-    -------
-    None
-    
     Examples
     --------
     The example data file, "`srtm_12_05.zip`_", can be downloaded from github.

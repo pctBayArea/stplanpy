@@ -210,10 +210,6 @@ def find_cent(fd: gpd.GeoDataFrame, orig="orig_taz", dest="dest_taz"):
     dest : str, defaults to "dest_taz"
         Column name that contains destination tazce codes.
  
-    Returns
-    -------
-    None
-    
     See Also
     --------
     ~stplanpy.cycle.routes
@@ -274,10 +270,6 @@ def expire_cache(expire=-1):
         expire, 0 to disable caching, or a number. Days can be set using e.g.
         timedelta(days=180). Defaults to -1.
 
-    Returns
-    -------
-    None
-    
     See Also
     --------
     ~stplanpy.cycle.routes

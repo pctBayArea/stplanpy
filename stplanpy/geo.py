@@ -118,10 +118,6 @@ def to_geojson(gdf: gpd.GeoDataFrame, file_name, crs="EPSG:4326"):
         The coordinate reference system (crs) of the output GeoJson file. The
         default value is "EPSG:4326".
  
-    Returns
-    -------
-    None
-    
     See Also
     --------
     ~stplanpy.geo.read_shp
